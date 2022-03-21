@@ -67,7 +67,7 @@ bindkey '^[SE' autosuggest-execute
 
 ### iterm2 配置快捷键字符序列
 
-打开 iterm2，通过操作路径 `Prefference -> Profiles -> Keys -> Key Mappings` 打开键位映射配置。我们先切换预设为 `Natural Text Editing`，注意切换的时候会提示是否保留之前的快捷键，建议是保留。
+打开 iterm2，通过操作路径 `Preference -> Profiles -> Keys -> Key Mappings` 打开键位映射配置。我们先切换预设为 `Natural Text Editing`，注意切换的时候会提示是否保留之前的快捷键，建议是保留。
 
 ![Key Mappings](https://s2.loli.net/2022/03/20/fL9uTiM2V6K3om5.png)
 
@@ -84,11 +84,11 @@ OK，这样我们就配置好了 iterm2 使用快捷键 `shift + enter` 直接�
 ```json
 // keybinding.json
 {
-        "key": "shift+enter",
-        "command": "workbench.action.terminal.sendSequence",
-        "when": "terminalFocus",
-  			// text 参数就是你需要输入给 shell 的自定义序列
-        "args": { "text": "\u001bSE" }
+  "key": "shift+enter",
+  "command": "workbench.action.terminal.sendSequence",
+  "when": "terminalFocus",
+  // text 参数就是你需要输入给 shell 的自定义序列
+  "args": { "text": "\u001bSE" }
 }
 ```
 

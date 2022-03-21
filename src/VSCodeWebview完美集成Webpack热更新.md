@@ -141,13 +141,13 @@ start();
 
 ## WebSocket URL 不合法
 
-当我们按照 webpack 官方文档和 [ react-refresh-webpack-plugin](https://github.com/pmmmwh/react-refresh-webpack-plugin) 集成 webpack 热更新和 react 组件的局部刷新后，首先会碰到下面的问题：
+当我们按照 webpack 官方文档和 [react-refresh-webpack-plugin](https://github.com/pmmmwh/react-refresh-webpack-plugin) 集成 webpack 热更新和 react 组件的局部刷新后，首先会碰到下面的问题：
 
-![无法构造 WebScoket 对象](https://s2.loli.net/2022/03/19/PIqoew5QxJlrS9B.png)
+![无法构造 WebSocket 对象](https://s2.loli.net/2022/03/19/PIqoew5QxJlrS9B.png)
 
 > Uncaught DOMException: Failed to construct 'WebSocket': The URL's scheme must be either 'ws' or 'wss'. 'vscode-webview' is not allowed
 
-提示已经告诉我们 `new WebScoket()` 的时候，URL 的协议必须是 `ws` 或者是 `wss`，但是你用的是 `vscode-webview`。通过 devtools 查看 VSCode 的 webview，我们可以清楚的看到 VSCode webview 是使用 iframe 实现的，协议是 `vscode-webview`:
+提示已经告诉我们 `new WebSocket()` 的时候，URL 的协议必须是 `ws` 或者是 `wss`，但是你用的是 `vscode-webview`。通过 devtools 查看 VSCode 的 webview，我们可以清楚的看到 VSCode webview 是使用 iframe 实现的，协议是 `vscode-webview`:
 
 ![VSCode Webview](https://s2.loli.net/2022/03/19/YVFbaPsEcSHXJg4.png)
 
@@ -205,7 +205,7 @@ module.exports = {
 
 可以看到 origin 请求头值为：`vscode-webview://180k16ne6bgriaem9878j8lt8el0qnj9uc9uodq31ah3fdgvvea8`，`vscode-webview` 这个 host 对于 webpack-dev-server 的默认策略来说是不合法的，具体可以查看： [What is the purpose of webpack-dev-server's allowedHosts security mechanism?](https://stackoverflow.com/questions/55939525/what-is-the-purpose-of-webpack-dev-servers-allowedhosts-security-mechanism)
 
-解决办法也很简单，配置 devserver 的 `allowedHosts` 选项：
+解决办法也很简单，配置 devServer 的 `allowedHosts` 选项：
 
 ```javascript
 function start() {
@@ -283,9 +283,9 @@ function start() {
 
 ![不算完美](https://s2.loli.net/2022/03/19/3TZCozDY1dSu4XK.gif)
 
-一旦触发 relaod, 例如我们删掉一个导入语句，webpack 在无法应用热更新的时候默认就会 relaod 页面，这会导致 webview 内容空白。
+一旦触发 reload, 例如我们删掉一个导入语句，webpack 在无法应用热更新的时候默认就会 reload 页面，这会导致 webview 内容空白。
 
-![](https://s2.loli.net/2022/03/19/qDswIPcSbEkdWje.png)
+![ VSCode Webview reload 就空白](https://s2.loli.net/2022/03/19/qDswIPcSbEkdWje.png)
 
 我们可以做个更简单的测试，直接在 `index.tsx` 中加入下面代码：
 
@@ -316,9 +316,9 @@ webpack 包的定位是一个打包器，并且提供了热更新的接口给外
 
 webpack-dev-server 定位是一个使用内存文件系统的静态服务器，用于托管 webpack 打包出的 bundle。同时。它还是一个 websocket 服务器，负责 webpack 和 bundle 代码的通信。
 
-当我们访问 webpack-dev-server 托管的 SPA 时，修改网页代码，有时候会触发 relaod，那么这部分 relaod 相关的源代码是在 webpack 中还是 webpack-dev-server 中呢？
+当我们访问 webpack-dev-server 托管的 SPA 时，修改网页代码，有时候会触发 reload，那么这部分 reload 相关的源代码是在 webpack 中还是 webpack-dev-server 中呢？
 
-其实前面已经说了是 webpack 负责提供热更新的接口，那么在无法应用热更新时，webpack 注入 bundle 中的源代码就会触发 relaod。
+其实前面已经说了是 webpack 负责提供热更新的接口，那么在无法应用热更新时，webpack 注入 bundle 中的源代码就会触发 reload。
 
 还记得我们前面配置热更新时需要配置额外的 entry 吗?
 
@@ -332,10 +332,6 @@ const devEntries = [
 其实 webpack 触发 reload 的逻辑就在这个文件 `webpack/hot/dev-server.js`，代码不多，也就 60 几行：
 
 ```javascript
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
 /* globals __webpack_hash__ */
 if (module.hot) {
   var lastHash;
@@ -393,9 +389,9 @@ if (module.hot) {
 
 ### 骚操作
 
-为了解决 webpack 自动 relaod 导致页面空白的问题。
+为了解决 webpack 自动 reload 导致页面空白的问题。
 
-首先我们就得不让 webpack 自动 relaod，这好办，直接把 `webpack/hot/dev-server.js` copy 一份，删掉 `window.location.reload();` 就行了。需要注意的时注意要同时修改里面 require 的相对路径为 webpack-dev-server 包下的路径。
+首先我们就得不让 webpack 自动 reload，这好办，直接把 `webpack/hot/dev-server.js` copy 一份，删掉 `window.location.reload();` 就行了。需要注意的是要同时修改里面 require 的相对路径为 webpack-dev-server 包下的路径。
 
 ```javascript
 // scripts/webpack.config.js
@@ -407,9 +403,9 @@ const devEntries = [
 ];
 ```
 
-但是没有 relaod 也不行啊！既然自己没法 reload，我们可以让 VSCode 去 reload。
+但是没有 reload 也不行啊！既然自己没法 reload，我们可以让 VSCode 去 reload。
 
-具体来说，我们可以修改 `webpack/hot/dev-server.js`，将中 reload 操作改成向我们的 VSCode 扩展通信，让它去 relaod Webview。
+具体来说，我们可以修改 `webpack/hot/dev-server.js`，将中 reload 操作改成向我们的 VSCode 扩展通信，让它去 reload Webview。
 
 修改 `webpack/hot/dev-server.js`，加入下面的代码，这个 `window.__reload__` 才是真正可用的 reload。
 
@@ -426,7 +422,7 @@ if (!window.__vscode__) {
 }
 ```
 
-再将其中 relaod 代码都替换成我们自己实现的 `window.__reload__` 完美集成 webpack 热更新啦！
+再将其中 reload 代码都替换成我们自己实现的 `window.__reload__` 完美集成 webpack 热更新啦！
 
 哦，对了，还要在扩展中要处理 reload 事件：
 
@@ -444,9 +440,9 @@ private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
         this.panel.webview.onDidReceiveMessage(
             (message) => {
                 switch (message.command) {
-                // 处理 relaod 实现
+                // 处理 reload 实现
                     case 'reload':
-                    // 需要修改 html 内容才会 relaod，所以每次都替换了 script 的 nonce 为一个随机字符串
+                    // 需要修改 html 内容才会 reload，所以每次都替换了 script 的 nonce 为一个随机字符串
                         this.html = this.html.replace(/nonce="\w+?"/, `nonce="${getNonce()}"`);
                         this.panel.webview.html = this.html;
                         return;
@@ -464,7 +460,7 @@ private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 
 ## 总结
 
-自己在折腾 VSCode Webview 和 Webpack 热更新的时候 debug 了很多代码，也翻了很多 webpack 和 webpack-dev-servr 的源码看。能够明显感觉到和刚入行前端时的不一样，那时候 debug 都用不利索，源码更是无从下手。其实阅读源码是一门技术活，我也是在看了很多开源项目源代码才变成现在碰到问题就看源码，debug 分析。刚入行那个时候，源码一看就头痛，看着不是自己写的代码就懵逼不知道咋下手。
+自己在折腾 VSCode Webview 和 Webpack 热更新的时候 debug 了很多代码，也翻了很多 webpack 和 webpack-dev-server 的源码看。能够明显感觉到和刚入行前端时的不一样，那时候 debug 都用不利索，源码更是无从下手。其实阅读源码是一门技术活，我也是在看了很多开源项目源代码才变成现在碰到问题就看源码，debug 分析。刚入行那个时候，源码一看就头痛，看着不是自己写的代码就懵逼不知道咋下手。
 
 这是时隔 2 年第一篇公开的博客，以后会陆续分享我在工作中和开源项目中的经验和思考。目前比较想分享的主题还有 ts 类型体操以及 VSCode 相关的一些东西。我感觉一周能写一篇就非常不容易了，有时间还要学习和写开源项目，最近为了写一个 VSCode 扩展又把 rust 的学习耽搁了。
 
@@ -473,4 +469,3 @@ private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 最近越发想写博客的另一个原因是感觉自己通过别人写的博客确实学到了很多东西，以至于我都给他的博客打赏了 66 块钱。而且自己之前的一些博客还是能时不时收到一些感谢。也有可能是单身久了，想通过写博客在网络上提升下存在感，通过交流排解下空虚感。
 
 全文完。
-
