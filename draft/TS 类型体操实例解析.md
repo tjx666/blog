@@ -357,6 +357,43 @@ string extends '666' ? true : false; // => false
 
 模板字符串类型是 typescript 4.1 新增的一个类型，由 C#，TypeScript, Delphi 之父 Anders Hejlsberg（安德斯·海尔斯伯格）亲自实现。结合模式匹配，类型递归等特性极大的增强了字符串类型的可玩性。
 
+在 TS 4.1 以前，由于没有模板字符串类型，下面的代码会报错：
+
+```typescript
+function dateFormat(date: Date, formatStr: string, isUtc: boolean) {
+  const getPrefix = isUtc ? 'getUTC' : 'get';
+  // eslint-disable-next-line unicorn/better-regex
+  return formatStr.replace(/%[YmdHMS]/g, (m: string) => {
+    let replaceStrNum: number;
+    switch (m) {
+      case '%Y':
+        // Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Date'.
+        //No index signature with a parameter of type 'string' was found on type 'Date'
+        return String(date[`${getPrefix}FullYear`]()); // no leading zeros required
+      case '%m':
+        replaceStrNum = 1 + date[`${getPrefix}Month`]();
+        break;
+      case '%d':
+        replaceStrNum = date[`${getPrefix}Date`]();
+        break;
+      case '%H':
+        replaceStrNum = date[`${getPrefix}Hours`]();
+        break;
+      case '%M':
+        replaceStrNum = date[`${getPrefix}Minutes`]();
+        break;
+      case '%S':
+        replaceStrNum = date[`${getPrefix}Seconds`]();
+        break;
+      default:
+        return m.slice(1); // unknown code, remove %
+    }
+    // add leading zero if required
+    return `0${replaceStrNum}`.slice(-2);
+  });
+}
+```
+
 #### 基本使用
 
 使用插值语法，你可以将已有的字符串字面量类型，数字字面量类型插进一个字符串中得到一个新的字符串字面量类型
