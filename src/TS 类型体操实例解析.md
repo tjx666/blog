@@ -1,3 +1,5 @@
+周会的分享内容，通过解析几个实用或者有趣的类型体操实例给大家分享一些 TypeScript 类型知识。也算是对自己刷了近 100 道 [type-challenges](https://github.com/type-challenges/type-challenges) 学到的知识做个小总结。由于分享时间有限，所有其实还有不少你可能不知道的 TS 技巧没有提到。
+
 ## 什么是类型体操
 
 - 高阶函数：传入函数，返回另一个函数。
@@ -99,7 +101,7 @@ SimpleVue({
 
 ### ThisType
 
-ThisType 是 TypeScript 内置的一个工具类型，它可以用来标记一个对象类型中方法属性中的 this 类型。
+ThisType 是 TypeScript 内置的一个工具类型，它可以用来标记一个对象类型中方法的 this 类型。
 
 例如：
 
@@ -140,8 +142,7 @@ PromiseValue 类型算是一个常用而且实现上也非常简单的模式匹�
 
 ```typescript
 type PromiseValue<P extends Promise<unknown>> = P extends Promise<infer V> ? V : never;
-type V = PromiseValue<Promise<number>>;
-// type V = number
+type V = PromiseValue<Promise<number>>; // => number
 ```
 
 注意到这个实现还用到了条件类型和 infer 运算符。
@@ -158,8 +159,6 @@ infer 运算符用于在模式匹配中定义一个类型变量，这个类型�
 结合前面提到的函数 this 参数，我们可以使用模式匹配来推出一个函数的 this 类型：
 
 ```typescript
-declare function func(this: { name: string }): void;
-
 type GetThisType<F extends (...args: any[]) => void> = F extends (
   this: infer TT,
   ...args: any[]
@@ -167,6 +166,7 @@ type GetThisType<F extends (...args: any[]) => void> = F extends (
   ? TT
   : never;
 
+declare function func(this: { name: string }): void;
 type TT = GetThisType<typeof func>;
 /*
 type TT = {
@@ -184,8 +184,7 @@ type GetReturnType<F extends (...args: unknown[]) => unknown> = F extends (
   ? RT
   : never;
 
-type RT = GetReturnType<() => 666>;
-// type RT = 666
+type RT = GetReturnType<() => 666>; // => 666
 ```
 
 ### 实现
@@ -242,7 +241,7 @@ SimpleVue({
 
 ## promiseAll
 
-实现一个函数 promiseAll 的类型声明，功能和 Promise.all 一样，正确处理参数和返回类型：
+实现函数 promiseAll 的类型声明，函数的功能和 Promise.all 一样，需要正确处理参数和返回类型：
 
 ```typescript
 const p1 = Promise.resolve(1);
@@ -299,7 +298,7 @@ const obj = {
 
 ```typescript
 declare function promiseAll<T extends readonly Promise<unknown>[]>(
-  // 写成数组解构的形式
+  // 写成数组解构的形式，这样编译器就会将 T 识别为元组
   promises: [...T],
 ): Promise<{
   readonly [P in keyof T]: T[P] extends Promise<unknown> ? PromiseValue<T[P]> : never;
@@ -346,16 +345,16 @@ type R2 = Permutation<'A' | 'B' | 'C' | 'D'>;
 
 ```typescript
 type S = '666'
-// S 就是字面量类型 '666'
+// S 是字符串字面量类型 '666'
 
 const s = '666';
-// 这个 s 是 string 类型
+// s 是 string 类型
 
 '666' extends string  ? true : false; // => true
 string extends '666' ? true : false; // => false
 ```
 
-模板字符串类型是 typescript 4.1 新增的一个类型，由 C#，TypeScript, Delphi 之父 Anders Hejlsberg（安德斯·海尔斯伯格）亲自实现。结合模式匹配，类型递归等特性极大的增强了字符串类型的可玩性。
+模板字符串类型是 typescript 4.1 新增的一个类型，由 C#，TypeScript, Delphi 之父 **Anders Hejlsberg**（安德斯·海尔斯伯格）亲自实现。结合模式匹配，类型递归等特性极大的增强了字符串类型的可玩性。
 
 在 TS 4.1 以前，由于没有模板字符串类型，下面的代码会报错：
 
@@ -403,15 +402,25 @@ type World = 'world';
 type Greeting = `hello ${World}`; // => type Greeting = "hello world"
 ```
 
-当插值本身是 union 类型时，结果也是 union 类型，如果插入了多个 union，那么结果就是所有的组合构成的 union。
+如果插值是 never，则整个模板字符串返回就是 never：
 
 ```typescript
-type EmailLocaleIDs = 'welcome_email' | 'email_heading';
-type FooterLocaleIDs = 'footer_title' | 'footer_sendoff';
+type N = `I ${never} give up`; // => never
+```
 
-type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_id`;
+当插值本身是 union 类型时，结果也是 union 类型：
 
-// type AllLocaleIDs = "welcome_email_id" | "email_heading_id" | "footer_title_id" | "footer_sendoff_id"
+```typescript
+type Feeling = 'like' | 'hate';
+type R = `I ${Feeling} you`; // => "I like you" | "I hate you"
+```
+
+如果插入了多个 union，那么结果就是所有的组合构成的 union。
+
+```typescript
+type AB = 'A' | 'B';
+type CD = 'C' | 'D';
+type Combination = `${AB}${CD}`; // => "AC" | "AD" | "BC" | "BD"
 ```
 
 #### 模板字符串类型在模式匹配中的应用
@@ -421,7 +430,6 @@ type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_id`;
 ```typescript
 type R1 = CapitalFirstLetter<'a little story'>; // => "A little story"
 type R2 = CapitalFirstLetter<''>; // => ""
-type R3 = CapitalFirstLetter<'NB'>; // => "NB"
 ```
 
 我们可以这样实现：
@@ -481,20 +489,52 @@ type R2 = UpperCase<'nb'>; // => "NB"
 ```typescript
 type UpperCase<S extends string> = S extends `${infer First}${infer Rest}`
   ? `${CapitalFirstLetter<First>}${UpperCase<Rest>}`
+	// 当 S 是空串便会走这个分支，直接返回空串即可
   : S;
 ```
 
 ### Union 的分布式运算
 
-在 TypeScript 中如过条件类型 extends 左侧是一个 Union 便会触发分布式计算规则:
+在 TypeScript 中如果条件类型 extends 左侧是一个 Union 便会触发分布式计算规则:
 
 ```typescript
-type Test<U> = U extends 1 ? 1 : 2;
-type R = Test<1 | 2>;
-// => type R = 1 | 2
+type Distribute<U> = U extends 1 ? 1 : 2;
+// 不熟悉的人可能会觉得返回 2, 认为走 false 分支
+type R = Test<1 | 2>; // => 1 | 2
 
 // 等同于
 type R1 = (1 extends 1 ? 1 : 2) | (2 extends 1 ? 1 : 2);
+```
+
+我们可以使用 Union extends Union 来遍历 Union 的每一项：
+
+```typescript
+// 声明一个额外的泛型 E 来标识循环的元素
+type AppendDot<U, E = U> = E extends U ? `${E & string}.` : never;
+// 使用 Union 来映射
+type R1 = AppendDot<'a' | 'b'>; // => "a." | "b."
+
+// 配合 as 来过滤 keys
+type Getter<T> = {
+    [P in keyof T as P extends `get${infer Rest}` ? P : never]: T[P];
+};
+
+const obj = {
+    age: 18,
+    getName() {
+        return 'ly';
+    },
+    hello() {
+        console.log('hello');
+    },
+};
+
+type R = Getter<typeof obj>;
+/*
+type R = {
+    getName: () => string;
+}
+ */
 ```
 
 ### 判断一个类型是否为 never
@@ -516,7 +556,7 @@ type R1 = IsNever<number>; // => false
 type R2 = IsNever<never>; // => never
 ```
 
-原因是 never 默认情况语义是空 union，空 union extends 任何类型返回都是 never。
+原因是 never 默认情况语义是空 union，空 union extends 任何类型返回都是 never。其实这点如果看 TS 的源码就是 TS 看到 extends 左侧就直接返回 never 了。
 
 需要使用额外的标记让 tsc 将 never 识别为独立的类型：
 
@@ -580,21 +620,22 @@ type Permutation<U, E = U> = [U] extends [never]
     <summary>答案</summary>
 
 ```typescript
+// 自底向上，使用递归来循环
 type Fibonacci<
-  T extends number,
-  // 表示循环下标
-  TArray extends ReadonlyArray<unknown> = [unknown, unknown, unknown],
-  // 表示前一个的前一个的值
-  PrePre extends ReadonlyArray<unknown> = [unknown],
-  // 表示前一个的值
-  Pre extends ReadonlyArray<unknown> = [unknown],
+    T extends number,
+    // 这个数组用来取 length 表示循环下标
+    TArray extends ReadonlyArray<unknown> = [unknown, unknown, unknown],
+    // 这个数组的 length 就是前一个项的前一项的值
+    PrePre extends ReadonlyArray<unknown> = [unknown],
+    // 表示前一项的值
+    Pre extends ReadonlyArray<unknown> = [unknown],
 > = T extends 1
-  ? 1
-  : T extends 2
-  ? 1
-  : T extends TArray['length']
-  ? [...Pre, ...PrePre]['length']
-  : Fibonacci<T, [...TArray, unknown], Pre, [...Pre, ...PrePre]>;
+    ? 1
+    : T extends 2
+    ? 1
+    : TArray['length'] extends T // 表示已经循环了 T 次
+    ? [...Pre, ...PrePre]['length'] // 前两项相加
+    : Fibonacci<T, [...TArray, unknown], Pre, [...Pre, ...PrePre]>; // 使用递归来循环
 ```
 
 </details>
