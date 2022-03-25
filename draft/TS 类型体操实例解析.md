@@ -153,9 +153,9 @@ type V = PromiseValue<Promise<number>>;
 A extends B ? C : D
 ```
 
-infer 运算法用于在模式匹配中定义一个类型变量，这个类型变量的具体类型由编译器根据模式匹配来推断出来。
+infer 运算符用于在模式匹配中定义一个类型变量，这个类型变量的具体类型由编译器根据模式匹配来推断出来。
 
-结合前面提到的函数 this 参数，我们可以使用模式匹配来退出一个函数的 this 类型：
+结合前面提到的函数 this 参数，我们可以使用模式匹配来推出一个函数的 this 类型：
 
 ```typescript
 declare function func(this: { name: string }): void;
@@ -529,7 +529,7 @@ type IsNever<T> = (() => T) extends () => never ? true : false;
 
 ### 全排列的思路
 
-从小到高中我们基本上年年都会学排列组合，为了在类型系统解决全排列的问题，我们先可以想想用 JS 代码怎么去实现全排列，想想你刷 leetcode 时是怎么实现全排列的。TS 类型只是实现逻辑的一种手段，关键还是思路。
+从小到高中我们基本上年年的数学课都会学排列组合，为了在类型系统解决全排列的问题，我们先可以想想用 JS 代码怎么去实现全排列，想想你刷 leetcode 时是怎么实现全排列的。TS 类型只是实现逻辑的一种手段，关键还是思路。
 
 可以使用递归的思路来解决这个问题：
 
@@ -572,4 +572,38 @@ type Permutation<U, E = U> = [U] extends [never]
   : E extends U
   ? `${E & string}${Permutation<Exclude<U, E>>}`
   : '';
+```
+
+**作业：**
+
+<details>
+    <summary>答案</summary>
+
+```typescript
+type Fibonacci<
+  T extends number,
+  // 表示循环下标
+  TArray extends ReadonlyArray<unknown> = [unknown, unknown, unknown],
+  // 表示前一个的前一个的值
+  PrePre extends ReadonlyArray<unknown> = [unknown],
+  // 表示前一个的值
+  Pre extends ReadonlyArray<unknown> = [unknown],
+> = T extends 1
+  ? 1
+  : T extends 2
+  ? 1
+  : T extends TArray['length']
+  ? [...Pre, ...PrePre]['length']
+  : Fibonacci<T, [...TArray, unknown], Pre, [...Pre, ...PrePre]>;
+```
+
+</details>
+
+效果：
+
+```typescript
+// 斐波那契数列：1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144,
+type R1 = Fibonacci<1>; // => 1
+type R3 = Fibonacci<3>; // => 2
+type R8 = Fibonacci<8>; // => 21
 ```
