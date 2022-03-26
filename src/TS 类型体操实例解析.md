@@ -1,4 +1,4 @@
-周会的分享内容，通过解析几个实用或者有趣的类型体操实例给大家分享一些 TypeScript 类型知识。也算是对自己刷了近 100 道 [type-challenges](https://github.com/type-challenges/type-challenges) 学到的知识做个小总结。由于分享时间有限，所有其实还有不少你可能不知道的 TS 技巧没有提到。
+周会的分享内容，通过解析几个实用或者有趣的类型体操实例给大家分享一些 TypeScript 类型知识。也算是对自己刷了近 100 道 [type-challenges](https://github.com/type-challenges/type-challenges) 学到的知识做个小总结。由于分享时间有限，所有其实还有很多学到的知识没有涉及到。
 
 ## 什么是类型体操
 
