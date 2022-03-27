@@ -31,7 +31,7 @@
 - <kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>↓</kbd>: 在下一行同一列添加光标
 - <kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>↑</kbd>: 在上一行同一列添加光标
 
-![同一列添加光标演示](https://raw.githubusercontent.com/tjx666/blog/main/images/VSCode%20%E5%A4%9A%E5%85%89%E6%A0%87/%E5%90%8C%E4%B8%80%E5%88%97%E6%B7%BB%E5%8A%A0%E5%85%89%E6%A0%87.gif)
+![同一列添加光标演示](https://s1.ax1x.com/2022/03/27/qB3ynS.gif)
 
 ### 添加选区
 
@@ -42,7 +42,7 @@ VSCode 编辑器中可以同时存在多个光标，也可以同时存在多个�
 - <kbd>⌘</kbd>+<kbd>D</kbd>：添加选区到下一个查找到的匹配，如果匹配到多个，每触发一次就多添加一个
 - <kbd>⌘</kbd>+<kbd>⇧</kbd>+<kbd>L</kbd>: 添加选区到所有查找到的匹配
 
-![添加选区](https://github.com/tjx666/blog/blob/main/images/VSCode%20%E5%A4%9A%E5%85%89%E6%A0%87/%E6%B7%BB%E5%8A%A0%E9%80%89%E5%8C%BA.gif?raw=true)
+![添加选区](https://s1.ax1x.com/2022/03/27/qB3c7Q.gif)
 
 上面两个快捷键虽然是说查到到的匹配，实际上使用的时候并不会展开搜索框。
 
@@ -58,7 +58,7 @@ VSCode 提供的命令很多时候是满足对称性的，例如 <kbd>⌘</kbd>+
 
 下面的例子就是先选中多行，再将光标添加到所有行的行尾，将 TypeScript 的 interface 改成使用逗号来分隔属性：
 
-![添加光标到选区行尾](https://github.com/tjx666/blog/blob/main/images/VSCode%20%E5%A4%9A%E5%85%89%E6%A0%87/%E9%80%89%E5%8C%BA%E8%A1%8C%E5%B0%BE%E6%B7%BB%E5%8A%A0%E5%85%89%E6%A0%87.gif?raw=true)
+![添加光标到选区行尾](https://s1.ax1x.com/2022/03/27/qB3mTJ.gif)
 
 ## 光标移动
 
@@ -101,7 +101,7 @@ VSCode 提供的命令很多时候是满足对称性的，例如 <kbd>⌘</kbd>+
 - <kbd>⌥</kbd>+<kbd>→</kbd> 是向右移动到词尾, <kbd>⇧</kbd>+<kbd>⌥</kbd>+<kbd>→</kbd> 就是选中光标当前位置到下一个词尾
 - <kbd>^</kbd>+<kbd>⌥</kbd>+<kbd>→</kbd> 是向右移动到单词的下一部分, <kbd>⇧</kbd>+<kbd>^</kbd>+<kbd>⌥</kbd>+<kbd>→</kbd> 就是向右选中单词的一部分
 
-![向右选中一个单词](https://s2.loli.net/2022/03/27/kvUpF7jsigO6nzo.gif)
+![向右选中一个单词](https://s1.ax1x.com/2022/03/27/qB89BD.gif)
 
 有个需要单独介绍的选中命令是 `smart select`。我们知道快捷键 `cmd + D` 可以选中一个单词，但如果想选中一个字符串它就不行了，这个时候可以就可以用智能选中来实现。
 
@@ -119,9 +119,9 @@ VSCode 提供的命令很多时候是满足对称性的，例如 <kbd>⌘</kbd>+
 Mac 上 <kbd>⌘</kbd>+<kbd>→</kbd> 表示 `End` 键，<kbd>⌘</kbd>+<kbd>←</kbd> 表示 `Home` 键，fn + <kbd>⌫</kbd> 表示 `Delete` 键这个规则应该是所有应用都通用的。
 
 - <kbd>⌥</kbd>+<kbd>⌫</kbd>: 向左删除到词首
-- <kbd>⌥</kbd>+<kbd>⌫</kbd>: 向左删除词的一部分
+- <kbd>^</kbd> + <kbd>⌥</kbd>+<kbd>⌫</kbd>: 向左删除词的一部分
 
-因为 backspace 本身就带有方向性，因此快捷键里面不需要搭配方向键。
+因为 Backspace 本身就带有方向性，因此快捷键里面不需要搭配方向键。
 
 ## 文本处理命令
 
@@ -150,7 +150,7 @@ VSCode 内置的有下面几个，以单词 `letterCase` 举例，转换结果�
 
 有能力的读者也可以自己编写 VSCode 扩展去实现更多的插入，转换，甚至删除等文本处理命令。需要注意的是实现的时候要处理所有选中，例如笔者的 VSCode 扩展 [VSCode FE Helper](https://github.com/tjx666/vscode-fe-helper) 实现的将选中单词变复数的扩展是下面这样实现的。代码很简单。可以注意到里面遍历了所有选区，所以在多光标编辑时调用这个命令时能够处理所有选中：
 
-```typescript
+```ts
 import { TextEditor } from 'vscode';
 
 export default async function plur(editor: TextEditor): Promise<void> {
@@ -205,7 +205,7 @@ Steps:
 
 原代码：
 
-```typescript
+```ts
 function App() {
   return (
     <HashRouter>
@@ -222,7 +222,7 @@ function App() {
 
 将原本字符串形式的路由重构为枚举类型：
 
-```typescript
+```ts
 export function App() {
   return (
     <HashRouter>
@@ -251,7 +251,7 @@ enum RoutePath {
 
 在我 [TypeScript 类型体操实例解析](https://github.com/tjx666/blog/blob/main/src/TS%20%E7%B1%BB%E5%9E%8B%E4%BD%93%E6%93%8D%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90.md) 这篇文章中有实现过一个将字符串字面量类型中所有字符转换成大写的类型：
 
-```typescript
+```ts
 type LetterMapper = {
   a: 'A';
   b: 'B';
