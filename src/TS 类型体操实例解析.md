@@ -8,7 +8,7 @@
 
 在 TypeScript 中，我们可以使用 type 去定义一些复杂类型，type 可以声明泛型参数，去让使用者传入类型，通过一系列的转换返回应该新的类型。其实可以简单把 TypeScript 中的 type 理解为类型空间里的函数：
 
-```typescript
+```ts
 type MyPartial<T> = {
   [K in keyof T]?: T[K];
 };
@@ -38,7 +38,7 @@ type R = {
 3. methods 中的 this 可以访问到 data 和 computed 的属性
 4. methods 中的 this 访问 computed 的属性的值类型是 computed 中方法的返回值类型
 
-```typescript
+```ts
 SimpleVue({
   data() {
     // @ts-expect-error
@@ -74,7 +74,7 @@ SimpleVue({
 
 ### 函数的 this 参数
 
-```typescript
+```ts
 declare function SimpleVue(options: {
   // 函数的 this 参数是 TS 函数中的一个特殊参数，用来约束函数的 this 类型
   // 声明 this 参数为空类型
@@ -105,7 +105,7 @@ ThisType 是 TypeScript 内置的一个工具类型，它可以用来标记一�
 
 例如：
 
-```typescript
+```ts
 type ObjectDescriptor<D, M> = {
   data?: D;
   methods?: M & ThisType<D & M>; // Type of 'this' in methods is D & M
@@ -140,7 +140,7 @@ obj.moveBy(5, 5);
 
 PromiseValue 类型算是一个常用而且实现上也非常简单的模式匹配的应用。
 
-```typescript
+```ts
 type PromiseValue<P extends Promise<unknown>> = P extends Promise<infer V> ? V : never;
 type V = PromiseValue<Promise<number>>; // => number
 ```
@@ -149,7 +149,7 @@ type V = PromiseValue<Promise<number>>; // => number
 
 条件类型让 TS 的类型空间有了条件控制流，使用形式：
 
-```typescript
+```ts
 // 如果 A 是 B 的子类型，那么返回 C，否则返回 D
 A extends B ? C : D
 ```
@@ -158,7 +158,7 @@ infer 运算符用于在模式匹配中定义一个类型变量，这个类型�
 
 结合前面提到的函数 this 参数，我们可以使用模式匹配来推出一个函数的 this 类型：
 
-```typescript
+```ts
 type GetThisType<F extends (...args: any[]) => void> = F extends (
   this: infer TT,
   ...args: any[]
@@ -177,7 +177,7 @@ type TT = {
 
 为了解决第四个问题，我们需要能够推断出一个函数的返回值类型，实现也很简单，就是利用模式匹配让编译器帮我们 infer 出返回值类型：
 
-```typescript
+```ts
 type GetReturnType<F extends (...args: unknown[]) => unknown> = F extends (
   ...args: unknown[]
 ) => infer RT
@@ -189,7 +189,7 @@ type RT = GetReturnType<() => 666>; // => 666
 
 ### 实现
 
-```typescript
+```ts
 type GetReturnType<F extends (...args: unknown[]) => unknown> = F extends (
   ...args: unknown[]
 ) => infer RT
@@ -243,7 +243,7 @@ SimpleVue({
 
 实现函数 promiseAll 的类型声明，函数的功能和 Promise.all 一样，需要正确处理参数和返回类型：
 
-```typescript
+```ts
 const p1 = Promise.resolve(1);
 const p2 = Promise.resolve(true);
 const p3 = Promise.resolve('good!');
@@ -253,7 +253,7 @@ const r = promiseAll([p1, p2, p3]);
 
 第一版实现：
 
-```typescript
+```ts
 type PromiseValue<P extends Promise<unknown>> = P extends Promise<infer V> ? V : never;
 
 declare function promiseAll<T extends readonly Promise<unknown>[]>(
@@ -279,7 +279,7 @@ const r = promiseAll([p1, p2, p3]);
 
 对于字面量类型大家都知道用 as const：
 
-```typescript
+```ts
 const obj = {
   name: 'ly',
 } as const;
@@ -296,7 +296,7 @@ const obj = {
 
 一种方式是将数组参数使用数组解构的形式：
 
-```typescript
+```ts
 declare function promiseAll<T extends readonly Promise<unknown>[]>(
   // 写成数组解构的形式，这样编译器就会将 T 识别为元组
   promises: [...T],
@@ -307,7 +307,7 @@ declare function promiseAll<T extends readonly Promise<unknown>[]>(
 
 另一种方式就是泛型参数约束的时候联合一个空元组：
 
-```typescript
+```ts
 // T extends (readonly Promise<unknown>[]) | []
 declare function promiseAll<T extends readonly Promise<unknown>[] | []>(
   promises: T,
@@ -322,7 +322,7 @@ declare function promiseAll<T extends readonly Promise<unknown>[] | []>(
 
 我们要实现的效果：
 
-```typescript
+```ts
 type R1 = Permutation<'A' | 'B' | 'C'>;
 // 3 x 2 x 1 种
 // => "ABC" | "ACB" | "BAC" | "BCA" | "CAB" | "CBA"
@@ -343,7 +343,7 @@ type R2 = Permutation<'A' | 'B' | 'C' | 'D'>;
 
 我们都知道 TS 中有字符串字面量类型，字符串字面量类型其实是 string 类型的子类型：
 
-```typescript
+```ts
 type S = '666'
 // S 是字符串字面量类型 '666'
 
@@ -358,7 +358,7 @@ string extends '666' ? true : false; // => false
 
 在 TS 4.1 以前，由于没有模板字符串类型，下面的代码会报错：
 
-```typescript
+```ts
 function dateFormat(date: Date, formatStr: string, isUtc: boolean) {
   const getPrefix = isUtc ? 'getUTC' : 'get';
   // eslint-disable-next-line unicorn/better-regex
@@ -397,27 +397,27 @@ function dateFormat(date: Date, formatStr: string, isUtc: boolean) {
 
 使用插值语法，你可以将已有的字符串字面量类型，数字字面量类型插进一个字符串中得到一个新的字符串字面量类型
 
-```typescript
+```ts
 type World = 'world';
 type Greeting = `hello ${World}`; // => type Greeting = "hello world"
 ```
 
 如果插值是 never，则整个模板字符串返回就是 never：
 
-```typescript
+```ts
 type N = `I ${never} give up`; // => never
 ```
 
 当插值本身是 union 类型时，结果也是 union 类型：
 
-```typescript
+```ts
 type Feeling = 'like' | 'hate';
 type R = `I ${Feeling} you`; // => "I like you" | "I hate you"
 ```
 
 如果插入了多个 union，那么结果就是所有的组合构成的 union。
 
-```typescript
+```ts
 type AB = 'A' | 'B';
 type CD = 'C' | 'D';
 type Combination = `${AB}${CD}`; // => "AC" | "AD" | "BC" | "BD"
@@ -427,14 +427,14 @@ type Combination = `${AB}${CD}`; // => "AC" | "AD" | "BC" | "BD"
 
 例如我们要实现一个将传入的字符串语句首字母大写：
 
-```typescript
+```ts
 type R1 = CapitalFirstLetter<'a little story'>; // => "A little story"
 type R2 = CapitalFirstLetter<''>; // => ""
 ```
 
 我们可以这样实现：
 
-```typescript
+```ts
 type LetterMapper = {
   a: 'A';
   b: 'B';
@@ -475,7 +475,7 @@ type CapitalFirstLetter<S extends string> = S extends `${infer First}${infer Res
 
 例如我们要实现所有给一个字符串，返回所有字符都被大写的字符串：
 
-```typescript
+```ts
 type R1 = UpperCase<'a little story'>; // => "A LITTLE STORY"
 type R2 = UpperCase<'nb'>; // => "NB"
 ```
@@ -486,7 +486,7 @@ type R2 = UpperCase<'nb'>; // => "NB"
 
 实现就是：
 
-```typescript
+```ts
 type UpperCase<S extends string> = S extends `${infer First}${infer Rest}`
   ? `${CapitalFirstLetter<First>}${UpperCase<Rest>}`
 	// 当 S 是空串便会走这个分支，直接返回空串即可
@@ -497,7 +497,7 @@ type UpperCase<S extends string> = S extends `${infer First}${infer Rest}`
 
 在 TypeScript 中如果条件类型 extends 左侧是一个 Union 便会触发分布式计算规则:
 
-```typescript
+```ts
 type Distribute<U> = U extends 1 ? 1 : 2;
 // 不熟悉的人可能会觉得返回 2, 认为走 false 分支
 type R = Test<1 | 2>; // => 1 | 2
@@ -508,7 +508,7 @@ type R1 = (1 extends 1 ? 1 : 2) | (2 extends 1 ? 1 : 2);
 
 我们可以使用 Union extends Union 来遍历 Union 的每一项：
 
-```typescript
+```ts
 // 声明一个额外的泛型 E 来标识循环的元素
 type AppendDot<U, E = U> = E extends U ? `${E & string}.` : never;
 // 使用 Union 来映射
@@ -541,14 +541,14 @@ type R = {
 
 实现一个类型 IsNever，达到一下效果:
 
-```typescript
+```ts
 type R1 = IsNever<number>; // => false
 type R2 = IsNever<never>; // => true
 ```
 
 有人会想这还不简单，直接用条件类型判断一下不就行了，刷刷写下下面的代码：
 
-```typescript
+```ts
 type IsNever<T> = T extends never ? true : false;
 
 type R1 = IsNever<number>; // => false
@@ -560,7 +560,7 @@ type R2 = IsNever<never>; // => never
 
 需要使用额外的标记让 tsc 将 never 识别为独立的类型：
 
-```typescript
+```ts
 // 标记的方式很多
 type IsNever<T> = [T] extends [never] ? true : false;
 type IsNever<T> = T[] extends never[] ? true : false;
@@ -577,7 +577,7 @@ type IsNever<T> = (() => T) extends () => never ? true : false;
 
 用 JS 实现就这样：
 
-```javascript
+```ts
 function permutation(list) {
   if (list.length === 1) return [list[0]];
 
@@ -606,7 +606,7 @@ console.log(permutation(['a', 'b', 'c']));
 
 ### TS 实现全排列
 
-```typescript
+```ts
 type Permutation<U, E = U> = [U] extends [never]
   ? ''
   : E extends U
@@ -619,7 +619,7 @@ type Permutation<U, E = U> = [U] extends [never]
 <details>
     <summary>答案</summary>
 
-```typescript
+```ts
 // 自底向上，使用递归来循环
 type Fibonacci<
     T extends number,
@@ -642,7 +642,7 @@ type Fibonacci<
 
 效果：
 
-```typescript
+```ts
 // 斐波那契数列：1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144,
 type R1 = Fibonacci<1>; // => 1
 type R3 = Fibonacci<3>; // => 2
