@@ -2,13 +2,37 @@
 
 内容大纲：
 
+- Mac 和 Windows 按键映射关系
 - 如何添加多光标
 - 移动光标
 - 选中文本
 - 删除文本
+- VSCode 快捷键的设计哲学
 - 文本处理命令
 - 多光标实战示例
 - 多光标编辑外更好的选择
+
+## Mac 和 Windows 按键映射关系
+
+- Mac 上的 ⌘ 也就是 command 键对应 Windows 上的 ctrl，command 键简称 cmd
+- Mac 上的 ⌥ 也就是 option 键对应 WIndows 上的 alt
+
+^ 就是 ctrl 键，另外在 Mac 自带的键盘上：
+
+- cmd + → 等同于 end 键
+- cmd + ← 等同于 home 键
+- fn + backspace 等同于 delete 键
+
+Mac 的键盘由于同时有 cmd 键和 ctrl 键，所以相比于 Windows 平台可以配置更多的快捷键。
+
+文中提到的快捷键可以按照上面的对应关系去映射，例如：
+
+- cmd + D 是添加选区到下一个查找到的匹配，在 Windows 上对应快捷键就应该是 ctrl + D
+- cmd + option + ↑ 是在上一行同一列添加光标，在 Windows 上对应的快捷键就应该是 ctrl + alt + ↑
+
+关系对应并不一定完全准确，利用好 VSCode 的快捷键搜索功能，支持模糊搜索和记录键位搜索。模糊搜索可以匹配命令名，快捷键，when 表达式，来源等，你在快捷键表里面看得到的文本都可以用来模糊搜索。
+
+之前是没有按键映射这部分内容的，我原以会大多数程序员对于 Mac 和 Windows 系统的按键映射关系应该没什么问题才对，但还是扛不住在 [V2EX](https://www.v2ex.com/t/843239) 上问的人太多。
 
 ## 如何添加多光标
 
@@ -122,6 +146,32 @@ Mac 上 <kbd>⌘</kbd>+<kbd>→</kbd> 表示 `End` 键，<kbd>⌘</kbd>+<kbd>←
 - <kbd>^</kbd> + <kbd>⌥</kbd>+<kbd>⌫</kbd>: 向左删除词的一部分
 
 因为 Backspace 本身就带有方向性，因此快捷键里面不需要搭配方向键。
+
+## VSCode 快捷键的设计哲学
+
+- 和光标移动相关的快捷键都包含 option 键，对应 Windows 上就是 alt
+
+- 光标移动的快捷键搭配 shift 就是选中移动区域的快捷键
+- 光标移动的快捷键搭配 backspace 就是删除移动区域的快捷键
+- VSCode 快捷键设计的对称性，有向右的快捷键是 xxx + → ，那么向左的快捷键就是 xxx + ←</kbd>
+
+记住移动相关的快捷键，使用上面的规律等同于记住了选中和删除的快捷键，你自定义快捷键也应该要符合这个规律。
+
+其它的规律：
+
+- cmd + k 用于组合复杂的快捷键，例如 cmd + k, cmd + s 是快捷键表
+
+- 和面板相关的快捷键都是 cmd + shift + xxx，例如 cmd + shift + e 是打开文件列表面板， cmd + shift + d 是 debug 面板的，cmd + shift + f 是打开搜索搜索面板的，cmd + shift + j 是新建 terminal 的， cmd + shift + m 是打开问题面板的，cmd + shift + u 是打开 output 面板的，cmd + shift + y 是打开 debug output 面板的
+
+有没有想过为什么 cmd + k, cmd + s 是打开快捷键表的快捷键？k 就是 key，s 就是 shortcut。
+
+为什么 cmd + shift + e 是打开文件列表面板的快捷键？e 就是 explorer。
+
+d 就是 debug，f 就是 find，这也是为什么英文软件尽量不用汉化的原因。
+
+学什么东西不需要成本？如果掌握了上面的规律还是觉得记快捷键太麻烦，那我觉得 vim 你还是碰都不要碰的好，那要记的东西可要多的多的多。
+
+自定义快捷键是一门学问，有时间单独写一期文章。但可能不是只聊咋自定义快捷键，而是聊 VSCode 命令的设计哲学，本质上快捷键都是为了触发触发命令。如果你想自定义快捷键实现一些功能，那么你应该去查对应的命令。
 
 ## 文本处理命令
 
@@ -296,10 +346,11 @@ type CapitalFirstLetter<S extends string> = S extends `${infer First}${infer Res
 
 VSCode 作为编辑器界的新生代王者，集百家之众长，除了多光标编辑还有很多可以提高编码和重构效率的特性。例如：
 
-- F2 重命名符号，批量替换变量名可以的话就不要用多光标编辑
+- F2 重命名符号，批量替换变量名可以的话就不要用多光标编辑，重命名符号更安全
+- 替换所有，有跨文件的和 tab 内的，如果你只是想要替换文本，也许直接用 VSCode 替换文本功能会简单和安全，对于复杂的文本你可以使用正则搜索
 - Snippets，曾经在 twitter 看到有人发帖说写了一下午的 react 组件，结果人家一个 snippet 就整完了
 - Code Actions On Save，在保存文件的时候自动添加缺失的 imports，格式化， lint 的 auto fix 等
-- Auto fix 和 fix all，如果你用了自动保存就不能用 Code Actions On Save 了，不过你可以手动调用自动修复和修复所有
+- auto fix 和 fix all，如果你用了自动保存就不能用 Code Actions On Save 了，不过你可以手动调用 lsp 或者 lint 扩展提供的自动修复和修复所有命令
 - 各种格式化扩展，例如使用 prettier 格式化代码风格，[JS/TS Import/Export Sorter](https://marketplace.visualstudio.com/items?itemName=dozerg.tsimportsorter) 格式化 imports
 
 等等。作为一个 VSCode 老玩家，我都觉得 VSCode 还有很多使用的功能特性地方我没探索到。众所周知，折腾编辑器，折腾 shell，折腾系统，是程序员的三大乐趣。充满未知才会有趣，才能让我们热此不疲，让我们每一次发现新大陆的时候感叹自己以前的无知。
@@ -310,4 +361,4 @@ VSCode 作为编辑器界的新生代王者，集百家之众长，除了多光�
 
 本文完。
 
-首发于我的 [blog 仓库](https://github.com/tjx666/blog)，[掘金 ](https://juejin.cn/user/2664871915684493/posts)和 [知乎](https://www.zhihu.com/people/yu-teng-jing/posts)，欢迎在 blog 仓库提 issue 或者在评论区提问讨论，未经本人允许，禁止转载。
+首发于我的 [blog 仓库](https://github.com/tjx666/blog)，[掘金 ](https://juejin.cn/user/2664871915684493/posts), [知乎](https://www.zhihu.com/people/yu-teng-jing/posts) 和 [V2EX](https://www.v2ex.com/t/843239)。欢迎在 blog 仓库提 issue 或者在评论区提问讨论，未经本人允许，禁止转载。
