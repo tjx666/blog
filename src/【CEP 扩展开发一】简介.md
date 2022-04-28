@@ -4,7 +4,7 @@ Adobe 毫无疑问是设计软件行业的垄断巨头，旗下的 PS，AE 等�
 
 **其实 CEP 扩展的开发生态是相当的恶劣**，中文资料不能说少，简直可以说是没有，质量不错的一只手可以数得过来。国外的资料相对多一点，但还是很少，主要还是以论坛，github 仓库, stackoverflow 提问的形式散落在各处，大多数文章的内容也很浅。
 
-笔者将近一年时间的主要工作就是为 AE 和 PS 开发 CEP 扩展，各上线了一个扩展。踩过很多坑，也有很多的技术沉淀。我写这一系列的主要目的在于：
+笔者将近一年时间的主要工作就是为 AE 和 PS 开发 CEP 扩展，各上线了一个扩展。踩过很多坑，也有很多的技术沉淀。我写这一系列教程的主要目的在于：
 
 1. 思考总结，知识沉淀
 2. 帮助新人快速入门，减少踩坑
@@ -28,7 +28,7 @@ Adobe 毫无疑问是设计软件行业的垄断巨头，旗下的 PS，AE 等�
 
 ![ExtendScript 脚本](https://s2.loli.net/2022/04/25/kjoIGRTEpc29g8u.png)
 
-ExtendScript 是 ECMAScript3 的一种方言，和 JavaScript 基本上语法一样，不过集成了一些例如指令，模块化，反射系统，三引号字符串等语法特性。文件后缀名是 `.jsx`（不是 react 用的那个 JS 的 DSL），**所以 ExtendScript 又被称为 jsx**。由宿主（**例如 PS, AE, PR 都叫宿主**）实现的 ExtendScript 引擎解释执行，不同宿主都能解释执行 jsx，但是底层实现以及注入的宿主特有的 API 不一样。
+ExtendScript 是 ECMAScript3 的一种方言，和 JavaScript 基本上语法一样，不过集成了一些例如指令，模块化，反射系统，三引号字符串，操作符重载等语法特性。文件后缀名是 `.jsx`（不是 react 用的那个 JS 的 DSL），**所以 ExtendScript 又被称为 jsx**。由宿主（**例如 PS, AE, PR 等设计软件自身都叫宿主**）实现的 ExtendScript 引擎解释执行，不同宿主都能解释执行 jsx，但是底层实现以及注入的宿主特有的 API 不一样。
 
 通过以下 jsx 代码查看 jsx 的引擎信息：
 
@@ -40,26 +40,22 @@ $.about();
 
 其实如果你不调用宿主特有的 API 或者针对不同的宿主做了兼容，那么 JSX 脚本就是兼容所有 adobe 设计软件的。既可以跑在 PS 上也能跑在 AE, InDesign 上，只要你跑的那个平台实现了 JSX 引擎（貌似绝大多数都实现了）。
 
-其实 ExtendScript 脚本和宿主的关系有点像 shell 脚本和操作系统的关系，ExtendScript 由宿主提供的 JSX Engine 解释执行，可以调用宿主的 API，shell 脚本由 shell 解释执行，可以调用系统命令。
+ExtendScript 可以调用宿主的各种 API，例如在 AE 中可以访问图层信息，调用渲染队列输出媒体资源，也有原生能力例如读写文件，还可以使用内置的各种窗口和控件接口去创建图形界面。因此它完全可以作为一种插件形式去实现独立的功能。
 
-ExtendScript 可以调用宿主的各种 API，例如访问图层信息，调用渲染队列输出媒体资源，也有原生能力例如读写文件，还可以使用内置的各种窗口和控件接口去创建图形界面。因此它完全可以作为一种插件形式去实现独立的功能。
+不带界面的例如可能很多人用过的这个用来优化 PSD 体积的 jsx 脚本：[一键压缩 PSD 文件从 GB 变为 MB](https://github.com/julysohu/photoshop_deep_cleaner)
 
-例如可能很多人用过的这个用来优化 PSD 体积的 jsx 脚本：[一键压缩 PSD 文件从 GB 变为 MB](https://github.com/julysohu/photoshop_deep_cleaner)
-
-再例如 github 上 1.2k star 的一个将 psd 图层导出为文件的工具：[Photoshop-Export-Layers-to-Files-Fast](https://github.com/antipalindrome/Photoshop-Export-Layers-to-Files-Fast)
+再例如 github 上 1.2k star 的一个将 psd 图层导出为文件的工具：[Photoshop-Export-Layers-to-Files-Fast](https://github.com/antipalindrome/Photoshop-Export-Layers-to-Files-Fast)，这个工具使用 jsx 搞了个的对话框。
 
 ![Photoshop-Export-Layers-to-Files-Fast](https://s2.loli.net/2022/04/25/LosJhwSniUVQvrc.png)
 
-#### 不只是 ExtendScript
-
-其实 adobe 软件支持的脚本语言并不只有 ExtendScript，例如在 PS 其实是支持：Apple Script, VBScript 和 ExtendScript，具体可以查看软件对应的文档：[Photoshop Scripting](https://github.com/Adobe-CEP/CEP-Resources/tree/master/Documentation/Product%20specific%20Documentation/Photoshop%20Scripting)。
+其实 adobe 软件支持的脚本语言并不只有 ExtendScript，例如在 PS 其实是支持：`Apple Script`, `VBScript` 和 `ExtendScript`，具体可以查看软件对应的文档：[Photoshop Scripting](https://github.com/Adobe-CEP/CEP-Resources/tree/master/Documentation/Product%20specific%20Documentation/Photoshop%20Scripting)。
 
 #### 优缺点
 
 优点：
 
 - 方便分享，本质上就是一个或多个 .jsx 后缀的文本文件，多个 jsx 文件可以使用 [jsxbin](https://www.npmjs.com/package/jsxbin) 打包成单个二进制文件。用户可以直接通过菜单直接加载执行
-- 界面风格非常贴近宿主界面：ScriptUI 是对 JSX 内置的图形界面框架的统称，例如上面 psd 导出工具的界面，可以看出使用 ScriptUI 构建的界面风格非常贴近宿主的原生界面风格
+- 界面风格非常贴近宿主界面：ScriptUI 是对 JSX 内置的图形界面框架的统称，例如上面那个导出 psd 图层为文件的工具的界面，可以看出使用 ScriptUI 构建的界面风格非常贴近宿主的原生界面风格
 - 方便复用：CEP 插件涉及到对宿主的访问都需要调用 JSX 脚本，这样的话，你用 JSX 脚本使用的功能其实很容易复用到 CEP 插件中。比如你在开发 CEP 扩展的某个功能的时候你就可以直接去把别人实现好的 JSX 代码直接拷过来调用
 
 缺点：
@@ -70,7 +66,7 @@ ExtendScript 可以调用宿主的各种 API，例如访问图层信息，调用
 
 ### 面板插件
 
-所谓面板插件，指的是界面是面板形式的插件，例如用于导出 [lottie](https://airbnb.io/lottie) 动画数据的 bodymovin。由于是界面是面板的形式，因此它们可以悬浮显示，也可以内嵌到 worksapce 布局中。
+所谓面板插件，指的是界面是面板形式的插件，例如用于导出 [lottie](https://airbnb.io/lottie) 动画数据的 [bodymovin](https://github.com/bodymovin/bodymovin-extension)。由于是界面是面板的形式，因此它们可以悬浮显示，也可以内嵌到 worksapce 布局中。
 
 ![bodymovin](https://s2.loli.net/2022/04/25/dZxuoPXQzYhBHNE.gif)
 
@@ -98,13 +94,11 @@ CEP([Common Extensibility Platform](https://github.com/Adobe-CEP/CEP-Resources/b
 > | CEF/Node integration | Node-Webkit 0.25          | Node-Webkit 0.38          | Node-Webkit 0.50.1          |
 > | v8                   | 6.3.292.49                | 7.4.288                   | 8.7                         |
 
-其实 CEP 的架构和[从 HTML 页面启动的 nwjs](https://www.electronjs.org/docs/latest/development/electron-vs-nwjs#1-entry-of-application) 最像，每一个 CEP 扩展本质就是本地的一个文件夹，**打开一个 CEP 扩展其实就是就是去渲染配置文件指定的在这个文件夹中的一个 HTML 文件**。
+其实 CEP 的架构和[从 HTML 页面启动的 nwjs](https://www.electronjs.org/docs/latest/development/electron-vs-nwjs#1-entry-of-application) 最像，每一个 CEP 扩展本质就是本地的一个文件夹，**打开一个 CEP 扩展其实就是就是去渲染 manifest.xml 指定的一个 HTML 文件**。
 
 看一个典型的 CEP 扩展目录：[AfterEffectsPanel](https://github.com/Adobe-CEP/Samples/tree/master/AfterEffectsPanel)
 
 ![CEP 扩展目录](https://s2.loli.net/2022/04/26/wWVAz5aR34oKrGD.png)
-
-关于 CEP 的架构先简单介绍到这，将在下一章详细介绍。
 
 #### UXP 面板插件
 
@@ -115,9 +109,9 @@ CEP([Common Extensibility Platform](https://github.com/Adobe-CEP/CEP-Resources/b
 CEP 的劣势：
 
 - CEP 使用完整的 Chromium 渲染 web，非常的吃资源，开多个 CEP 插件的时候更甚
-- CEP 并不能直接访问宿主，需要写 jsx 代码访问宿主，实际开发你要写两端代码，一份是 jsx，一份是浏览器环境代码，分别被两个不同的 js 引擎执行，互相调用很不方便
+- CEP 并不能直接访问宿主，需要写 jsx 代码访问宿主。实际开发时你要写两端代码，一份是 jsx，一份是浏览器环境代码，分别被两个不同的 js 引擎执行，互相调用很不方便
 - CEP 插件不能使用原生控件，你需要编写很多 CSS 样式才能与原生面板和对话框的样式风格匹配
-- jsx 的 ECMAScript 规范版本很低，你需要在浏览器的高版本 ECMAScript 和 jsx 的 ECMAScript3 不断切换
+- jsx 的 ECMAScript 规范版本很低，你需要在浏览器的高版本 ECMAScript 和 jsx 的 ECMAScript3 来回切换
 
 UXP 的优势：
 
@@ -126,8 +120,6 @@ UXP 的优势：
 - UXP 可以使用 [Spectrum CSS](https://opensource.adobe.com/spectrum-css/) 组件库来，这个组件库支持自动切换主题而且是跨平台的，能够让你开发的面板看起来和应用本身风格一致
 
 相对于 CEP，一个很明显的优势是可以直接在浏览器环境代码中直接访问宿主，不需要像 CEP 那样通过 evalScript 或者 evalFile 调用 jsx 代码来访问宿主，在 CEP 中浏览器环境的代码和 jsx 代码是完全隔离的。
-
-有点像你在 nodejs 执行 shell 脚本，原本需要开个子进程执行 shell 脚本，现在好了，它直接支持在 nodejs 中混编 shell 代码，有点像 [shelljs](https://github.com/shelljs/shelljs)。
 
 例如同样实现获取当前打开的 PSD 文件名，CEP 中代码是这样的：
 
@@ -180,9 +172,11 @@ UXP 扩展还处在发展中，目前只有 PS2021 及其以上的版本支持 U
 ~/Library/Application Support/Adobe/CEP/xxx
 ```
 
-可以看到 CEP 扩展存放路径并不是和某个宿主关联的，这意味着所有宿主在启动时都会去加载所有的 CEP 插件的配置文件。在 CEP 的配置文件中你是可以配置它兼容的宿主的，所有也不是说 AE CEP 插件会出现在 PS 中。
+可以看到 CEP 扩展存放路径并不是和某个宿主关联的，这意味着**所有宿主**在启动时都会去加载**所有的 CEP 插件的配置文件**。在 CEP 的配置文件中你是可以配置它兼容的宿主的，所有也不是说 AE CEP 插件会出现在 PS 中。
 
-在 AE 中，出现在特效和预设面板的中的第三方插件都是 c++ 插件。给 AE 新增一种特效这在 JSX 中是做不到的，只能通过 c++。涉及到对应用中的二进制数据计算的功能也是没法通过 jsx 实现的，jsx 中都没有 buffer 对象，nodejs 倒是可以读取本地文件，但是也没办法读取编辑中的合成使用到的媒体资源的二进制数据。After Codes 是一个在 AE 和 PR 提供丰富的导出格式和对导出媒体文件压缩能力的扩展，例如 AE 渲染队列是不支持导出 mp4 格式的，通过它可以导出 mp4，并可以设置导出的 mp4 的压缩级别。由于需要读取和计算合成中的媒体资源二进制数据，因此显而易见是个 c++ 插件。
+在 AE 中，出现在特效和预设面板的中的第三方插件都是 c++ 插件。给 AE 新增一种特效这在 JSX 中是做不到的，只能通过 c++。涉及到对应用中的二进制数据计算的功能也是没法通过 jsx 实现的，jsx 中都没有 buffer 对象，nodejs 倒是可以读取本地文件，但是也没办法读取编辑中的合成使用到的媒体资源的二进制数据。After Codes 是一个可以给 AE 和 PR 提供丰富的导出格式和对导出媒体文件压缩能力的扩展，例如 AE 渲染队列是不支持导出 mp4 格式的，通过它可以导出 mp4，并可以设置导出的 mp4 的压缩级别。由于需要读取和计算合成中的媒体资源二进制数据，因此显而易见是个 c++ 插件。
+
+在 PS 中倒是可以使用生成器插件来使用 nodejs 对 psd 的图像二进制数据进行读取，而且还是异步的，感兴趣的可以阅读这篇文章：[生成器](https://blog.cutterman.cn/2022/02/12/generator/)。
 
 ![c++ plugin](https://s2.loli.net/2022/04/27/kW8MsuHFRGeDoc6.png)
 
@@ -241,9 +235,9 @@ UXP 扩展还处在发展中，目前只有 PS2021 及其以上的版本支持 U
 
 ## 学习资料
 
-### 必读治疗
+### 必读
 
-首先当然是 [CEP Extension Cookbook](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_11.x/Documentation/CEP%2011.1%20HTML%20Extension%20Cookbook.md)，建议一字不落通读 3 遍。这个文档由浅入深的介绍了 CEP 开发的方方面面。我最开始写 CEP 开发的时候看了两遍这个后就对 CEP 开发胸有成竹了，感觉 CEP 的老底已经被我摸透。看的时候建议一边看一边实际写代码测试，还是有很多东西你不去实际测试是很难理解的。
+首先当然是 [CEP Extension Cookbook](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_11.x/Documentation/CEP%2011.1%20HTML%20Extension%20Cookbook.md)，建议一字不落通读 3 遍。这个文档由浅入深的介绍了 CEP 开发的方方面面。我最开始做 CEP 开发的时候看了两遍这个后就对 CEP 开发胸有成竹了，感觉 CEP 的老底已经被我摸透。看的时候建议一边看一边实际写代码测试，还是有很多东西你不去实际测试是很难理解的。
 
 [JavaScript Tools Guide CC](https://extendscript.docsforadobe.dev/#) 是 adobe 官方的 extendscript 教程，涵盖了 ExtendScript 的方方面面，这个建议按照自己的需要看对应的章节，刚入门的时候 [文件系统](https://extendscript.docsforadobe.dev/file-system-access/index.html) 和 [ExtendScript 工具和特性](https://extendscript.docsforadobe.dev/extendscript-tools-features/index.html) 这两章应该说是必看的。阅读前者你会知道这样在 jsx 中进行文件读写，打开文件管理器窗口等，这些都是在开发时肯定会碰到的知识。通过阅读后者你会了解 ExtendScript 相对于 JavaScript 的不同点，例如 ExtendScript 自身的模块化，反射系统，操作符重载。
 
@@ -251,9 +245,9 @@ UXP 扩展还处在发展中，目前只有 PS2021 及其以上的版本支持 U
 
 ### 推荐阅读
 
-[creative-scripts.com](https://creative-scripts.com/) 这个网站上有几篇文章很值得阅读，例如 [JSX.js A Game Changer in Adobe HTML Extensions Development?](https://creative-scripts.com/jsx-js/)，这篇文章教会了我怎样通过 JS 代码加载 JSX 代码，通过阅读 JSX.js 的源码，我还学到 了例如怎样获取 JSX 中 exception 对应的代码位置信息等。
+[creative-scripts.com](https://creative-scripts.com/) 。这个网站上有几篇文章很值得阅读，例如 [JSX.js A Game Changer in Adobe HTML Extensions Development?。](https://creative-scripts.com/jsx-js/)这篇文章教会了我怎样在浏览器的 JS 代码中加载 JSX 代码，通过阅读 JSX.js 的源码，我还学到 了例如怎样获取 JSX 中 exception 对应的代码位置信息等。
 
-[小强的博客](https://blog.cutterman.cn/2021/09/18/photoshop-plugin-types/) 我当时入门 PS ActionManager 就是看这位老哥的博客，因为受益匪浅还给他捐赠了 66 块。
+[小强的博客](https://blog.cutterman.cn/2021/09/18/photoshop-plugin-types/) 。我当时入门 PS ActionManager 就是看这位老哥的博客，因为受益匪浅还给他捐赠了 66 块。
 
 ### 面向 debugger 学习
 
@@ -266,3 +260,12 @@ UXP 扩展还处在发展中，目前只有 PS2021 及其以上的版本支持 U
 在 VSCode 中配置好 jsx 的代码提示，通过阅读 API 的 jsdoc 就可以知道 API 是干嘛用的，也可以通过这种方式查找自己需要的 API。
 
 ![jsx suggestion](https://s2.loli.net/2022/04/28/EiMqQCXl4jOYn2o.png)
+
+## 总结
+
+CEP 扩展开发可以说是一个很小众的领域了，国内外的资料异常的稀少。如果你有在 adobe 设计软件中开发一个面板扩展的需求，就目前阶段毫无疑问的最佳选择还是 CEP。c++ 开发效率太低，对程序员的要求比起前端高不少，而且前端程序员肯定比 c++ 程序员数量多不少，招人也容易的多，所以如果不是涉及到必须操作编辑中的媒体的二进制数据（例如特效插件）的话，还是不建议上 c++ 插件。
+
+我一开始写 CEP 也很难受，不过还好我前端工程化能力够强，最终是把 webpack + react + typescript 这一套给整起来了，还支持了 VSCode 的代码提示，封装了支持异步的双端通信框架，写了个很简单的测试框架，研究出了个检测 jsx 内存泄漏的工具，写了俩 VSCode 插件辅助开发。经过不断的折腾，开发体验目前还算不错。唯一遗憾的可能就是目前 jsx 的 debugger 还不支持 sourcemap，所以 jsx 不敢上 typescript。
+
+
+
