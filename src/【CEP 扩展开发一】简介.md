@@ -66,7 +66,7 @@ ExtendScript 可以调用宿主的各种 API，例如在 AE 中可以访问图�
 
 ### 面板插件
 
-所谓面板插件，指的是界面是面板形式的插件，例如用于导出 [lottie](https://airbnb.io/lottie) 动画数据的 [bodymovin](https://github.com/bodymovin/bodymovin-extension)。由于是界面是面板的形式，因此它们可以悬浮显示，也可以内嵌到 worksapce 布局中。
+所谓面板插件，指的是界面是面板形式的插件，例如用于导出 [lottie](https://airbnb.io/lottie) 动画数据的 [bodymovin](https://github.com/bodymovin/bodymovin-extension)。由于是界面是面板的形式，因此它们可以悬浮显示，也可以内嵌到 workspace 布局中。
 
 ![bodymovin](https://s2.loli.net/2022/04/25/dZxuoPXQzYhBHNE.gif)
 
@@ -80,7 +80,7 @@ ExtendScript 可以调用宿主的各种 API，例如在 AE 中可以访问图�
 
 在 AE 中，就像上面 GIF 图中展示的那样，你通过菜单 Window -> Extensions 的下拉列表打开的就是 CEP 扩展了。
 
-CEP([Common Extensibility Platform](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_11.x/Documentation/CEP%2011.1%20HTML%20Extension%20Cookbook.md)) 扩展的界面是使用 Chromium 渲染的，采用的是 CEF（Chromium Embedded Framework） 架构。CEF 简单理解就是将浏览器嵌入到其它应用中让我们可以直接使用前端技术去开发界面，electron, nwjs，tarui 是 CEF 架构的代表框架了。这类框架除了是使用前端技术开发界面，runtime 往往都还搞成混合型的，例如开启了 node 集成的 electron 和 nwjs 的浏览器窗口的运行时都是 web runtime 和 nodejs runtime 的复合 runtime。
+CEP([Common Extensibility Platform](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_11.x/Documentation/CEP%2011.1%20HTML%20Extension%20Cookbook.md)) 扩展的界面是使用 Chromium 渲染的，采用的是 CEF（Chromium Embedded Framework） 架构。CEF 简单理解就是将浏览器嵌入到其它应用中让我们可以直接使用前端技术去开发界面，electron, nwjs，tauri 是 CEF 架构的代表框架了。这类框架除了是使用前端技术开发界面，runtime 往往都还搞成混合型的，例如开启了 node 集成的 electron 和 nwjs 的浏览器窗口的运行时都是 web runtime 和 nodejs runtime 的复合 runtime。
 
 > ### Chromium Embedded Framework (CEF)
 >
@@ -152,7 +152,7 @@ UXP 扩展还处在发展中，目前只有 PS2021 及其以上的版本支持 U
 
 ### 独立客户端
 
-你可以实现一个独立于宿主软件之外的客户端来给它们提供扩展能力。本质上，其实你只需要有办法去调用宿主 API，能和宿主通信即可。通信的方式有很多，如果你是使用 VB 构建的界面，你可以使用 ps 的 com 库。如果你是用 electron 写的客户端，那么你可以用 osascript 去执行一段 jsx 代码。笔者开发的一个 VSCode 扩展 [ Adobe Extension Development Tools](https://marketplace.visualstudio.com/items?itemName=YuTengjing.adobe-extension-devtools) 提供了 AE 合成 Outline 功能，获取 AE 合成信息时本质上就是通过 osascript 去执行了一段 jsx 代码。
+你可以实现一个独立于宿主软件之外的客户端来给它们提供扩展能力。本质上，其实你只需要有办法去调用宿主 API，能和宿主通信即可。通信的方式有很多，如果你是使用 VB 构建的界面，你可以使用 ps 的 com 库。如果你是用 electron 写的客户端，那么你可以用 osascript 去执行一段 jsx 代码。笔者开发的一个 VSCode 扩展 [Adobe Extension Development Tools](https://marketplace.visualstudio.com/items?itemName=YuTengjing.adobe-extension-devtools) 提供了 AE 合成 Outline 功能，获取 AE 合成信息时本质上就是通过 osascript 去执行了一段 jsx 代码。
 
 ![AE Composition Outline](https://s2.loli.net/2022/04/27/Q39sKIUPeEOZcql.gif)
 
@@ -233,6 +233,12 @@ UXP 扩展还处在发展中，目前只有 PS2021 及其以上的版本支持 U
 
 比较靠谱的网站有 [stackoverflow](https://stackoverflow.com/)，[Adobe Support Community](https://community.adobe.com/)，[creativecow.net](https://creativecow.net/forums/)，直接 google 搜不到，可以试试这几个网站的站内搜索，再搜不到可以去 github 碰碰运气。
 
+### 扩展 vs 插件
+
+扩展的英文单词是 extension，插件的英文单词是 plugin。其实大多数情况下扩展和插件是同一个意思。但是有时候也不一样，例如 chrome 扩展和插件，chrome 的扩展是你在扩展市场下载的那个比如说油猴扩展，而插件是更为底层的 chrome 组件。但事实上，很多时候人们会混为一谈。如果你有心的话，你会注意到在一些比较严谨的文档里，adobe 软件的 c++ 插件只会用 c++ plugin 不会用 c++ extension，而 CEP 扩展一般只会用 CEP extension 表达而不会用 CEP Plugin。这貌似和 chrome 一样，plugin 表示的是更底层的组件，而 extension 表示的是应用层的组件。
+
+后序的教程多我会尽量使用 `CEP 扩展`而不是 `CEP 插件`，但也不排除可能笔误会写成 CEP 插件。绝大数情况下混用它俩不会造成文章内容理解上的困扰，不过还是希望读者能理解`扩展`和`插件`的区别。
+
 ## 学习资料
 
 ### 必读
@@ -265,7 +271,4 @@ UXP 扩展还处在发展中，目前只有 PS2021 及其以上的版本支持 U
 
 CEP 扩展开发可以说是一个很小众的领域了，国内外的资料异常的稀少。如果你有在 adobe 设计软件中开发一个面板扩展的需求，就目前阶段毫无疑问的最佳选择还是 CEP。c++ 开发效率太低，对程序员的要求比起前端高不少，而且前端程序员肯定比 c++ 程序员数量多不少，招人也容易的多，所以如果不是涉及到必须操作编辑中的媒体的二进制数据（例如特效插件）的话，还是不建议上 c++ 插件。
 
-我一开始写 CEP 也很难受，不过还好我前端工程化能力够强，最终是把 webpack + react + typescript 这一套给整起来了，还支持了 VSCode 的代码提示，封装了支持异步的双端通信框架，写了个很简单的测试框架，研究出了个检测 jsx 内存泄漏的工具，写了俩 VSCode 插件辅助开发。经过不断的折腾，开发体验目前还算不错。唯一遗憾的可能就是目前 jsx 的 debugger 还不支持 sourcemap，所以 jsx 不敢上 typescript。
-
-
-
+我一开始写 CEP 也很难受，不过还好我前端工程化能力够强，最终是把 webpack + react + typescript 这一套给整起来了，还支持了 VSCode 的代码提示，封装了支持异步的双端通信框架，写了个很简单的测试框架，研究出了个检测 jsx 内存泄漏的工具，写了俩 VSCode 插件辅助开发。经过不断的折腾，开发体验目前还算不错。唯一遗憾的可能就是目前 VSCode jsx 的 debugger 插件还不支持 sourcemap，所以 jsx 不敢上 typescript。
