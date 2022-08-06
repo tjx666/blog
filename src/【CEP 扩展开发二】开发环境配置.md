@@ -1,6 +1,8 @@
 本文是 CEP 扩展开发系列教程的第二篇，首先会讲解 CEP 的开发环境的配置，跑起来一个 hello world 级别的应用，然后分析探讨运行这个 hello world 应用背后发生的技术细节。
 
-CEP 扩展本身是跨系统（Windows，MacOS）平台的，但是不同宿主环境（Photoshop，AfterEffects 等）的 jsx  解释器（或者说 engine）的技术实现有些许差异。注入的 API 那更是完全不一样，毕竟不同宿主的文档模型和工具能力差异很大，PS 是 psd，AE 是 project。
+CEP 扩展本身是跨系统（Windows，MacOS）平台的，但是不同宿主环境（Photoshop，AfterEffects 等）的 jsx 解释器（或者说 engine）的技术实现有些许差异。注入的 API 那更是完全不一样，毕竟不同宿主的文档模型和工具能力差异很大，PS 是 psd，AE 是 project。
+
+由于最近一段时间我都是在写 PS 插件，因此本文将会主要以 PS 为例子来讲解。
 
 ## 开发工具
 
@@ -24,7 +26,7 @@ CEP 扩展本身是跨系统（Windows，MacOS）平台的，但是不同宿主�
 
 2. 我不信任第三方翻译，有很多第三方的翻译我觉得不太行，而且有可能更新也不及时，正常人都喜欢原汁原味的
 
-3. 有助于更快更准确的理解软件使用的技术，
+3. 有助于更快更准确的理解软件代码中使用的字段名，也方便抄代码和找到谷歌关键字
 
 关于第三点，这里再展开讲讲。我们编写代码是英文的，而且使用 debugger 或者第三方扩展查看 PS 中各种数据时得到的也是英文的，因此如果你的软件界面是英文的，就能很快的对应起来。举个简单的例子，当我们想通过代码修改一个图层的是否可见的，在 PS 中设置一个图层是否可见只要点击左侧的眼睛图标就可以，当我们把光标移动到这个眼睛上，我们看看 hover 提示：
 
@@ -55,44 +57,46 @@ CEP 扩展本身是跨系统（Windows，MacOS）平台的，但是不同宿主�
 ```javascript
 // 至于怎么拿到 layerDesc 这个后序教程讲 AM 的时候就知道了，暂时你就理解为图层的描述对象，和底层 c++ 图层的结构体对应
 function isVectorDensityModified(layerDesc) {
-    return layerDesc.vectorMaskDensity != null && layerDesc.vectorMaskDensity !== 255;
+  return layerDesc.vectorMaskDensity != null && layerDesc.vectorMaskDensity !== 255;
 }
 ```
 
 ## Hello World
 
-接下来我们来开一个非常简单的 Hello World 应用，它会让我们认识到：
+接下来我们动手写一个简单的 Hellow World 级别的插件，功能很简单：插件面板有一个按钮，点击这个按钮在插件界面上显示出当前选中图层的名称。
 
-- CEP 扩展的文件目录结构规范
-- 通过 manifest.xml 配置扩展
-- CEP 扩展的 Debug 模式
+### 创建项目
 
-### CEP 扩展的文件目录结构规范
+插件必须要放在特定的文件夹才能被 PS 读取到。有三个位置都能存放 CEP 插件：
 
-```
-.
-├── .debug # CEP 扩展 debug 模式配置文件，只开开发时需要
-├── CSXS # 用于存放扩展的配置和资源文件（例如图标）
-│   └── manifest.xml # 扩展清单文件，用于配置扩展的名称，兼容性，图标，菜单等方方面面，类似 chrome 扩展和 pwa 应用的 manifest
-├── JSX # 存放 extendscript 代码
-└── web # 前端代码
-    └── public
-        └── index.html # 扩展 HTML
-```
+#### 软件安装文件夹
 
-上面展示的文件结构除了 .debug，CSXS，manifest.xml，之外所有文件的名称和位置都可以是配置的，例如 index.html 你可以放到任意位置，只需要同步修改 manifest.json 中的 MainPath 参数即可。
+> ${PP}/CEP/extensions (PPs may use different folder.)
 
-```xml
-<Extension Id="com.yutengjing.helloworld">
-    <DispatchInfo>
-        <Resources>
-            <MainPath>path/to/index.html</MainPath>
-            <CEFCommandLine>
-                <Parameter>--enable-nodejs</Parameter>
-                <Parameter>--mixed-context</Parameter>
-            </CEFCommandLine>
-        </Resources>
-    </DispatchInfo>
-</Extension>
-```
+例如软件（或者说宿主）是 Photoshop，那么在 Mac 对应的路径默认就是：`/Applications/Adobe Photoshop 2022`，当然软件的安装路径你是可以修改的。这个文件夹不应该被用于存放第三方插件，是用来存放软件自带的 CEP 插件的，而且在 Mac 上修改这个文件夹是需要 Root 权限的。
 
+#### 系统级的插件文件夹
+
+- Win(x64): `C:\Program Files (x86)\Common Files\Adobe\CEP\extensions`, and `C:\Program Files\Common Files\Adobe\CEP\extensions` (since CEP 6.1)
+- macOS: `/Library/Application Support/Adobe/CEP/extensions`
+
+既然是系统级的，那么将插件安装到这就是需要 root 权限。开发插件的时候肯定是不会放这的，放这都权限修改代码。
+
+这个文件夹适合存放生产环境的插件，某种程度上可以防止用户修改到插件内容，修改了插件内容一般会导致 **PS 加载插件的时候报插件内容和签名不一致的问题**。
+
+#### 用户级别的插件存放文件夹
+
+- Win: `C:\Users\<USERNAME>\AppData\Roaming\Adobe\CEP/extensions`
+- macOS: `~/Library/Application Support/Adobe/CEP/extensions`
+
+这才是我们在开发插件时插件应该存放的目录，我们可以随意修改这个文件夹内的内容。
+
+#### 插件查找顺序
+
+软件安装文件夹 > 系统级的插件文件夹 > 用户级别的插件存放文件夹
+
+### 添加插件配置文件
+
+有过 chrome 扩展或者 pwa 应用的读者应该都见过你个名为 manifest 的文件，同样的在 CEP 插件中也必须存在一个 manifest.xml 文件。
+
+它采用 xml 格式，而且

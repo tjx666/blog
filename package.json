@@ -1,0 +1,31 @@
+{
+    "name": "blog",
+    "version": "1.0.0",
+    "description": "## 目录",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tjx666/blog.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/tjx666/blog/issues"
+    },
+    "homepage": "https://github.com/tjx666/blog#readme",
+    "simple-git-hooks": {
+        "pre-commit": "npx lint-staged"
+    },
+    "lint-staged": {
+        "src/*.md": "prettier --write"
+    },
+    "devDependencies": {
+        "lint-staged": "13.0.3",
+        "prettier": "2.7.1",
+        "simple-git-hooks": "2.8.0"
+    }
+}

@@ -1,3 +1,5 @@
 {
-    // "cSpell.enabled": false
+    "[javascript][typescript][typescriptreact][json][jsonc][html][css][less][markdown][xml][yaml][svg]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
