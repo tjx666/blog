@@ -14,7 +14,7 @@ CEP 扩展本身是跨系统（Windows，MacOS）平台的，但是不同宿主�
 - 操作系统：我本人用的是 MacOS Monterey12.5，CEP 扩展核心技术 chromium + nodejs + extendscript 都是跨平台的，所以本身是跨系统平台的。CEP 全拼是 `Common Extensibility Platform`，既然叫 `Common`（通用的意思） ，那么是跨平台也不然理解了。
 - 浏览器：Chrome，CEP 扩展本身是使用 Chromium 内核渲染的，你可以使用任何基于 Chromium 内核的浏览器来远程 debug CEP 的网页代码。我测试过 360 和 edge 也是可以的，其它浏览器例如 safari 和 firefox 我没试过，有需要的读者可以参考后面会讲的使用 chrome 来 debug CEP 扩展的方法自行摸索。
 
-![about ps](https://s2.loli.net/2022/08/02/QXMIrGScPwCOkWa.png)
+![PS 版本](https://s2.loli.net/2022/08/02/QXMIrGScPwCOkWa.png)
 
 ## 为什么我强烈建议使用英文界面而不是中文版
 
@@ -30,27 +30,27 @@ CEP 扩展本身是跨系统（Windows，MacOS）平台的，但是不同宿主�
 
 关于第三点，这里再展开讲讲。我们编写代码是英文的，而且使用 debugger 或者第三方扩展查看 PS 中各种数据时得到的也是英文的，因此如果你的软件界面是英文的，就能很快的对应起来。举个简单的例子，当我们想通过代码修改一个图层的是否可见的，在 PS 中设置一个图层是否可见只要点击左侧的眼睛图标就可以，当我们把光标移动到这个眼睛上，我们看看 hover 提示：
 
-![layer visibility](https://s2.loli.net/2022/08/02/ZiY3fVj2yHmUCdQ.png)
+![图层可见性](https://s2.loli.net/2022/08/02/ZiY3fVj2yHmUCdQ.png)
 
 看到这其实我们基本上就能肯定 layer 上有一个 `visibility` 或者它的形容词 `visible`，通过 debugger 工具查看果不其然有个 `visible` 属性：
 
-![debugger_visible.png](https://s2.loli.net/2022/08/02/4ZI6sCDcT2jaYpP.png)
+![debugger 中查看 visible 属性](https://s2.loli.net/2022/08/02/4ZI6sCDcT2jaYpP.png)
 
 实际的项目开发你会发现很多场景这对于加速开发是非常帮助的，来一个更复杂的例子。例如我们最近的一个实际需求，检测一个矢量蒙版是否修改了密度，也就是不是默认的 100。产品给到我的示意图是这样的：
 
-![vector_layer_density.png](https://s2.loli.net/2022/08/02/HyaQe3UBmKi1ZjG.png)
+![矢量蒙版密度](https://s2.loli.net/2022/08/02/HyaQe3UBmKi1ZjG.png)
 
 我看到这图的第一眼是很懵逼的，密度对应的英文单词是哪个？查了一下谷歌翻译：
 
-![translate_density.png](https://s2.loli.net/2022/08/02/GUMr9diTnogKV1J.png)
+![使用谷歌翻译翻译密度](https://s2.loli.net/2022/08/02/GUMr9diTnogKV1J.png)
 
 那他丫的到底是 density 还是 thickness，又或者是 denseness 呢？直到我打开我英文版的 PS 的矢量蒙版的属性面板，一目了然：
 
-![shape_layer_density_en.png](https://s2.loli.net/2022/08/02/3MHvSbp5k7cEg1l.png)
+![PS 英文界面中的密度](https://s2.loli.net/2022/08/02/3MHvSbp5k7cEg1l.png)
 
 这时英文版的优势就极大的体现出来了，使用我开发的 [Adobe Extension Development Tools](https://marketplace.visualstudio.com/items?itemName=YuTengjing.adobe-extension-devtools&ssr=false#review-details) 打开图层的 Descriptor Info，直接搜索 density，毫无疑问 `vectorMaskDensity` 就是我们要找的属性。
 
-![vector mask density](https://s2.loli.net/2022/08/02/vi1PkodOySqwxs6.png)
+![descriptor info 中的矢量蒙版密度属性](https://s2.loli.net/2022/08/02/vi1PkodOySqwxs6.png)
 
 这样代码写起来也很快：
 
@@ -236,7 +236,7 @@ mkdir cep-hello-world
 }
 ```
 
-![manifest.xml](https://s2.loli.net/2022/08/07/CjivByHqwzefN7O.png)
+![.vscode/settings.json](https://s2.loli.net/2022/08/07/CjivByHqwzefN7O.png)
 
 ### 浏览器代码
 
@@ -334,7 +334,7 @@ html body {
 
 ExtendScript 在我们 CEP 圈子里又称之为 jsx，可能因为它的文件后缀名就是 `.jsx`，这对于写 react 的前端来说开始可能有点不习惯。在前面的代码中我们还没有实现获取当前选中的图层的名称的接口，在实现它之前我们得先对 CEP 各个运行时有个基本的了解。
 
-![CEP 通信](https://s2.loli.net/2022/08/07/caTSz7eQZqvxGtw.jpg)
+![CEP 浏览器代码和 jsx 代码交互](https://s2.loli.net/2022/08/07/caTSz7eQZqvxGtw.jpg)
 
 CEP 插件的代码按照职责可以分为两部分：
 
@@ -418,7 +418,7 @@ alias disable_cep_debug="defaults write com.adobe.CSXS.11 PlayerDebugMode 0"
 
 配置完 CEP 的 debug 模式后，重启 ps 后你应该就可以在菜单中找到并打开插件了：
 
-![Hello World](https://s2.loli.net/2022/08/07/BCPRvWLOrezDsmx.png)
+![打开插件步骤](https://s2.loli.net/2022/08/07/BCPRvWLOrezDsmx.png)
 
 ## 总结
 
