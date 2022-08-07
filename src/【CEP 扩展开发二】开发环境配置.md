@@ -63,7 +63,7 @@ function isVectorDensityModified(layerDesc) {
 
 ## Hello World
 
-接下来我们动手写一个简单的 Hello World 级别的插件，功能很简单：插件面板有一个按钮，点击这个按钮在插件界面上显示出当前选中图层的名称。
+接下来我们动手写一个简单的 Hello World 级别的插件，功能很简单：插件面板有一个按钮，点击这个按钮在插件界面上显示出当前选中图层的名称。完整的项目代码我已经放到 github 上了：[cep-hello-world](https://github.com/tjx666/cep-hello-world/tree/c59b58ba35a1476b2bc0897f7d8f390d5a4757f6)。
 
 ![演示](https://s2.loli.net/2022/08/07/T6Zlp5G8hIXonBt.gif)
 
