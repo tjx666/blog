@@ -378,7 +378,7 @@ CEP 插件的代码按照职责可以分为两部分：
 
 在开发插件时我们肯定不会每次打开插件先签一遍名，所以开发前我们都会选择先去配置 CEP 的 debug 模式。不同的系统配置方式不同。
 
-### Mac 环境配置 CEP debug 模式
+#### Mac 环境配置 CEP debug 模式
 
 在终端执行下面的命令即可开启 CEP11 的 debug 模式：
 
@@ -410,7 +410,7 @@ alias enable_cep_debug="defaults write com.adobe.CSXS.11 PlayerDebugMode 1"
 alias disable_cep_debug="defaults write com.adobe.CSXS.11 PlayerDebugMode 0"
 ```
 
-### Windows 环境配置 CEP Debug 模式
+#### Windows 环境配置 CEP Debug 模式
 
 `Win + R` 输入 `regedit` 打开注册表编辑器，定位到 `HKEY_CURRENT_USER/Software/Adobe/CSXS.11`，修改 `PlayerDebugMode` 项的值为 1，值类型选择字符串。如果没有找到 `PlayerDebugMode` 项，那就自己添加一个。
 
