@@ -432,4 +432,4 @@ alias disable_cep_debug="defaults write com.adobe.CSXS.11 PlayerDebugMode 0"
 
 ![CEP 架构](https://s2.loli.net/2022/08/07/ZSYe4bKEyoJcOaH.png)
 
-本文没有涉及对 nodejs 的使用，后面再单独出一篇教程吧。下一篇教程将讨论如何 debug CEP 的前端代码和 ExtendScript 代码的。
+本文没有涉及对 nodejs 的使用，后面再单独出一篇教程吧。下一篇教程将讨论如何 debug CEP 的前端代码和 ExtendScript 代码。
