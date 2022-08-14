@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // 对当前打开的文件进行 debug
+        {
+            "name": "Run File",
+            "type": "extendscript-debug",
+            // launch 模式每次 debug 时插件会和 ps jsx engine 建立一次连接，当代码执行结束自动断开
+            // 这种 debug 方式其实和一般我们 debug nodejs 代码没区别
+            "request": "launch",
+            // 指定 jsx 代码执行的宿主环境
+            "hostAppSpecifier": "photoshop",
+            // 指定执行的入口文件为当前打开的文件
+            // 查看所有的 VSCode 变量：https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables
+            "script": "${file}",
+            // 在 debug variables panel 中隐藏函数属性(包括操作符重载)，内建属性（包括 arguments）
+            "hiddenTypes": ["Function", "builtin"]
+        },
+        {
+            "name": "Attach Debug",
+            "type": "extendscript-debug",
+            // attach 模式相当于建立一个持久连接，每次代码执行结束连接不会断开，除非手动断开连接
+            "request": "attach",
+            "hostAppSpecifier": "photoshop"
+        }
+    ]
+}
