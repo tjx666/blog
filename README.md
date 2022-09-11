@@ -8,6 +8,10 @@
 2. [如何给 shell 自定义快捷键](https://github.com/tjx666/blog/blob/main/src/%E5%A6%82%E4%BD%95%E7%BB%99shell%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE.md)
 3. [TS 类型体操实例解析](https://github.com/tjx666/blog/blob/main/src/TS%20%E7%B1%BB%E5%9E%8B%E4%BD%93%E6%93%8D%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90.md)
 4. [VSCode 又酷又实用的多光标编辑](https://github.com/tjx666/blog/blob/main/src/VSCode%E5%8F%88%E9%85%B7%E5%8F%88%E5%AE%9E%E7%94%A8%E7%9A%84%E5%A4%9A%E5%85%89%E6%A0%87%E7%BC%96%E8%BE%91.md)
+5. [【CEP 扩展开发一】简介](https://github.com/tjx666/blog/blob/main/src/%E3%80%90CEP%20%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91%E4%B8%80%E3%80%91%E7%AE%80%E4%BB%8B.md)
+6. [【CEP 扩展开发二】HelloWorld](https://github.com/tjx666/blog/blob/main/src/%E3%80%90CEP%20%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91%E4%BA%8C%E3%80%91HelloWorld.md)
+7. [【CEP 扩展开发三】Debug](https://github.com/tjx666/blog/blob/main/src/%E3%80%90CEP%20%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91%E4%B8%89%E3%80%91Debug.md)
+8. [PS插件图层遍历性能优化](https://github.com/tjx666/blog/blob/main/src/PS%E6%8F%92%E4%BB%B6%E5%9B%BE%E5%B1%82%E9%81%8D%E5%8E%86%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.md)
 
 你也可以访问我的一些社区主页：
 
