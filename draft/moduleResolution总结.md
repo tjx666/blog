@@ -469,7 +469,9 @@ import submodule from 'es-module-package/private-module.js';
 
 #### 优先级
 
-当 exports 映射左侧的多个 pattern 都能匹配当前导入模块，最终会选择哪个呢？是短路匹配还是取 `*` 值最短的那个匹配。例如下面的 exports：
+如果 exports 映射左侧的多个 pattern 都能匹配当前导入模块，最终会选择哪个呢?
+
+当 package.json 为：
 
 ```json
 {
@@ -483,47 +485,54 @@ import submodule from 'es-module-package/private-module.js';
 }
 ```
 
-当解析 `xxx/a/b` 时其实会使用`"./a/b": "./a/b.js"`。也就是说会取 `*` 值最短的：
+模块 id 是：`xxx/a/b`，最终会使用最具体的 `./a/b`。
 
-- `"./*"` 的 `*` 值是 `a/b`
-- `"./a/*"` 的 `*` 值是 `b`
-- `"./a/b"` 的 `*` 值可以理解为空字符串
-- `"./*.js"` 不匹配
+`./*`, `./a/*`, `./a/b` 都能匹配这个模块 id，显然短路匹配时是不合理的，因为如果采用短路匹配，那么就是采用 `./*` 这个规则了，我们就没办法去设置一个更具体的规则，也就是说 `./a/b` 这个规则就没用了。
 
-我们可以利用这一点将一个模块设置为私有的：
+再看另一个例子：
+
+package.json:
 
 ```json
 {
+  "name": "xxx",
   "exports": {
-    "./features/*.js": "./src/features/*.js",
-    "./features/private-internal/*": null
+    "./a/*/c": null,
+    "./a/b/*": "./dist/hello.js"
   }
 }
 ```
+
+当模块 id 是 `xxx/a/b/c`，nodejs 会采用 `"./a/b/*"`，而目前主流的几个 node 模块解析库都不能正确解析，只有 webpack 用的 [enhanced-resolve](https://github.com/webpack/enhanced-resolve) 是可以解析的，下面三全跪：
+
+- vite 内置插件 `vite:resolve` 使用的 [resolve.exports](https://github.com/lukeed/resolve.exports/issues/29) 这个第三方库
+- rollup 官方插件 [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/issues/1476)
+- rspack 使用的 [nodejs-resolver](https://github.com/web-infra-dev/nodejs_resolver/issues/177)
+
+那么所谓的更具体到底是怎样的算法呢？具体可以看 [enhanced-resolve 的源码](https://github.com/webpack/enhanced-resolve/blob/main/lib/util/entrypoints.js#L565) ，简单来说，他会根据你 exports 对象构建一颗 path tree，例如我们这个例子就是：
 
 ```javascript
-import featureInternal from 'es-module-package/features/private-internal/m.js';
-// Throws: ERR_PACKAGE_PATH_NOT_EXPORTED
-
-import featureX from 'es-module-package/features/x.js';
-// Loads ./node_modules/es-module-package/src/features/x.js
-```
-
-而且需要注意的是当多个规则同时匹配时，`*` 值最短的规则右侧 pattern 找不到对应模块，并不会 fallback 到 `*` 值更长的 pattern。
-
-例如对于下面的 exports，`"./a/b"` pattern 的目标路径为 null，找不到，不会 fallback 到 `"./a/*"` 让你能加载到 `./dist/a/b.js`
-
-```json
 {
-  "name": "commonjs",
-  "exports": {
-    "./*": null,
-    "./a/*": "./dist/a/b.js",
-    "./a/b": null,
-    "./*.js": null
+  children: {
+    a: {
+      children: {
+        '*': {
+          files: {
+            c: null
+          }
+        },
+        b: {
+          wildcards: {
+            '': './dist/hello.js'
+          }
+        }
+      }
+    }
   }
 }
 ```
+
+然后按照树层级遍历方式优先取当前层不是通配符的子节点，所有这个例子在 `*` 和 `b` 这一层时取的是 `b`。
 
 ### 条件导出
 
