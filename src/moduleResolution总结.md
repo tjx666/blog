@@ -244,7 +244,7 @@ const add = require('lodash/src/add');
 
 vite 和 rollup 都是通过插件系统来增加自身的能力，它们都是先通过 resolve 插件确定一个模块的最终文件路径，再下一步使用 `@rollup/plugin-commonjs` 插件在需要转换的情况下给你转成 esm。如果同时存在 esm 的入口和通用入口，都会优先使用 esm 入口。
 
-一些人可能会认为 `main` 入口是给 commonjs 专用的，其实不是，main 入口也可以给 esm 用，它是一个通用入口。另一个类似的还有 exports 中的 default 字段。
+一些人可能会认为 `main` 入口是给 commonjs 专用的，其实不是，main 入口也可以给 esm 用，它是一个通用入口。另一个类似的还有 `exports` 中的 default 字段。
 
 ```json
 {
@@ -498,16 +498,18 @@ import submodule from 'es-module-package/private-module.js';
 
 在 node 官方文档中：
 
-- `exports` 的 key `./*` 的英文术语里叫 pattern，也就是模式
-- `exports` 的 value `./lib/*.js` 的英文术语叫 target，也就是目标地址
+- `exports` 可以写通配符 `*` 的路径例如 `./*` 在英文术语里叫 pattern，也就是模式
+- `exports` 的 value `./lib/*.js` 的英文术语叫 target pattern，也就是目标模式
 
-注意我们这里的 `*` 用的不是 glob 语法，要读懂这个映射规则，我们可以这样理解：
+注意我们这里的 `*` 用的不是 glob 语法，在 glob 语法里面 `*` 表示任意的一层目录，但是在 exports pattern 中可以表示任意层任意路径。
+
+要读懂这个映射规则，我们可以这样理解：
 
 1. 给定一个模块 id `lodash/add`
-2. 使用模块名 `lodash` 替换将侧的 pattern `./*` 中的 `.` ，也就是`lodash/*`
-3. 把 pattern `lodash/*` 和模块 id `lodash/add` 做模式匹配，得到 `*` 的值就是 `add`。
-4. 将 target `./lib/*.js` 中的 `*` 替换第三步得到的 `*` 的值得到 `./lib/add.js`，也就是相对于 `lodash` package 的文件地址
-5. 把相对路径中的 `.` 替换为 `lodash` 就能得到模块 id `lodash/add` 对应的绝对路径
+2. 使用模块名 `lodash` 替换左侧的 pattern `./*` 中的 `.` ，得到 `lodash/*`
+3. 把 pattern `lodash/*` 和模块 id `lodash/add` 做模式匹配，得到 `*` 的值就是 `add`
+4. 将 target pattern `./lib/*.js` 中的 `*` 替换第三步得到的 `*` 的值得到 `./lib/add.js`，也就是相对于 `lodash` package 的相对路径
+5. 把相对路径中的 `.` 替换为 `lodash` package 的绝对路径就能得到模块 id `lodash/add` 的绝对路径：`/xxx/node_modules/lodash/lib/add.js`
 
 #### 禁止模块导出
 
@@ -639,7 +641,7 @@ package.json:
 4. 最终遍历到叶子节点的这条路径表示的 pattern 就是最特殊的 pattern，也就是 `./a/b/*`
 
 ```txt
-      root
+      root(.)
     a      *
   b   *
 *       c
@@ -649,7 +651,7 @@ package.json:
 
 为了能够在不同条件下使用不同的模块解析规则，你可以使用条件导出。
 
-```jsonc
+```json
 {
   "exports": {
     ".": {
@@ -730,18 +732,17 @@ package.json:
 
 如果你想让 nodejs 能够处理 `xxx` 条件，你可以在运行 node 指定 `conditions` 参数：
 
-```
+```json
 {
-    "name": "xxx",
-    "exports": {
-        ".": {
-            "xxx": "./dist/hello.js",
-            "require": null,
-            "default": null
-        }
+  "name": "xxx",
+  "exports": {
+    ".": {
+      "xxx": "./dist/hello.js",
+      "require": null,
+      "default": null
     }
+  }
 }
-
 ```
 
 ```shell
@@ -770,11 +771,11 @@ monorepo-project
             └── index.ts // 希望修改代码热更新能生效
 ```
 
-为了实现 `vite` 开发环境下 library package 能热更新，我们一般会这样组织 exports：
+为了实现 `vite` 开发环境下 library package 能热更新，我们一般会这样组织 `exports`：
 
-```jsonc
+```json
 {
-  "type": "modules",
+  "type": "module",
   "exports": {
     ".": {
       "import": {
@@ -867,17 +868,17 @@ monorepo-project
 
 注意点：
 
-- `types` 条件应该放到其它条件也就是 `require` 和 `impor`t 前面
+- `types` 条件应该放到其它条件也就是 `require` 和 `import` 前面
 - 这里声明 `main`, `module`,`typesVersions` 是为了兼容性，在理想情况下，一个 `exports` 对象能解决所有问题
 
 #### 细说 typescript 中的 moduleResolution
 
 最新的 typescript v5.1， `tsconfig.json` 的 `moduleResolution` 选项支持 5 个值：
 
-- `classsic`
+- `classic`
 - `node`
 - `node16`
-- ` nodenext`` 表示最新的 nodejs 模块解析策略，所以是兼容 `node16` 的
+- `nodenext` 表示最新的 nodejs 模块解析策略，所以是兼容 `node16` 的
 - `bundler`
 
 `classic` 和 `node` 这两个从 ts 诞生支持就存在，但它们不支持 `exports`，后来新增的 `node16`, `nodenext`, `bundler` 都支持。
@@ -913,7 +914,7 @@ Relative import paths need explicit file extensions in EcmaScript imports when '
 
 在使用 `node16` 之后新增的模块解析策略时，tsc 会优先取 `exports` 配置的类型解析规则，忽略 `typesVersions`。不过如果你不使用 `exports` 配置 ts 类型，tsc 还是支持`typesVersions` 的。需要注意的是这个时候 `typesVersions` 需要写扩展名：
 
-```jsonc
+```json
 {
   "name": "math",
   "exports": {
@@ -944,15 +945,39 @@ Relative import paths need explicit file extensions in EcmaScript imports when '
 - node：不支持 exports
 - node16/nodenext: 强制要求使用相对路径模块时必须写扩展名
 
-于是乎，ts5.0 新增了个新的模块解析策略：`bundler`。它出现最大的好处就是：可以让你使用`epxorts` 声明类型的同时，使用相对路径模块可以不写扩展名。
+这就导致 node16/nodenext 这俩几乎策略几乎没人用，用的最多的还是 node。
+
+于是乎，ts5.0 新增了个新的模块解析策略：`bundler`。它出现最大的好处就是：可以让你使用`exports` 声明类型的同时，使用相对路径模块可以不写扩展名。
 
 ## 最佳实践
 
+对于项目结构：
+
+```txt
+pkg
+├── dist
+│   ├── cjs
+│   │   ├── index.cjs
+│   │   └── utils.cjs
+│   ├── es
+│   │   ├── index.mjs
+│   │   └── utils.mjs
+│   └── types
+│       ├── index.d.ts
+│       └── utils.d.ts
+├── package.json
+├── src
+│   ├── index.ts
+│   └── utils.ts
+├── tsconfig.json
+└── vite.config.ts
+```
+
 ### 理想情况
 
-- 只发布 ESM 模块
+- 只发布 ESM 模块，设置 package.json `"type": "module"`
 - 使用类似 vite/rollup 可以不写模块扩展名的打包工具
-- typescript 版本 >= 5.0，tsconfig.json 设置 moduleResolution: bundler
+- typescript 版本 >= 5.0，`tsconfig.json` 设置`"moduleResolution": "bundler"`
 
 `package.json`:
 
@@ -999,10 +1024,11 @@ Relative import paths need explicit file extensions in EcmaScript imports when '
 
 ### 考虑兼容性
 
-```jsonc
+```json
 {
   "type": "module",
   // 兼容不支持 exports 的打包器，例如 webpack4
+  // 也是挺离谱的，最新版的 webpack4 现在下载量还是最新版的 webpack5 的接近 50 倍
   // https://github.com/webpack/webpack/issues/9509#issuecomment-1381896299
   "module": "./dist/es/index.mjs",
   "main": "./dist/cjs/index.cjs",
@@ -1020,7 +1046,7 @@ Relative import paths need explicit file extensions in EcmaScript imports when '
     }
   },
   // 兼容用户 ts moduleResolution: node
-  // 开发环境使用 .ts
+  // 开发环境使用源码目录 src 下的 .ts
   "typesVersions": {
     "*": {
       "*": ["./src/*"]
@@ -1051,9 +1077,9 @@ Relative import paths need explicit file extensions in EcmaScript imports when '
 
 ## 总结
 
-JS 在设计之初并没有模块这个概念，ESM 也才这两年正式落地，而模块解析策略随着` exports` 的出现有了统一的并且能够满足各种场景需求的标准。估计过个一两年很多新发布的 npm 包连` main` 字段都不写了。
+JS 在设计之初并没有模块这个概念，ESM 也才这两年正式落地，而模块解析策略随着`exports` 的出现有了统一的并且能够满足各种场景需求的标准。估计过个一两年很多新发布的 npm 包连`main` 字段都不写了。
 
-- `exports` 是一个强大并且被各种前端工具广泛支持的模块解析标准，我们开发 npm 包时，应该使用 `exports `来管理它的解析规则
+- `exports` 是一个强大并且被各种前端工具广泛支持的模块解析标准，我们开发 npm 包时，应该使用 `exports`来管理它的解析规则
 - `exports` 的解析规则较为复杂，社区的很多第三方实现或多或少有些 bug，尤其是和优先级相关的
 - 对于很多不想写扩展名的前端项目来说，应该使用 `bundler` 解析策略，这样的话第三方库就可以只写 `exports`，不写 `typesVersions`
 - typescript 的很多设计都是对现实妥协的产物，除了 `bundler` 解析策略，再例如装饰器，早期的装饰器并没有进到 ECMAScript stage3 标准，TS 还是自己实现了一套。换句话说就是 typescript 在开发效率和 ECMAScript 标准之间在当时选择了开发效率。
