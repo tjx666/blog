@@ -108,18 +108,16 @@ NODE_MODULES_PATHS(START)
 相比于 `classic` 策略的区别在于：
 
 - 递归查找的目录是 `node_modules`，不是父级文件夹
-
 - 引入了 `package.json`，各种配置项尤其是后面会展开说的 `exports` 字段使得 node 模块解析策略的变得非常复杂
-
 - 支持文件夹模块，也就是 `pkg/index.js`，文件夹中包含 index.js，这个文件夹就是一个模块。
 
 其它需要注意的点：
 
 - 在讨论模块解析策略时，查找的文件类型不重要。css, png，html, wasm 文件都可以视为一个模块。
-- 在那个工具中查找模块也不重要。 tsc, nodejs, vite, esbuild, webpack, rspack 都需要处理 import/require，都需要解析模块，都需要选择一个查找模块的策略，而绝大多数都是使用 node 策略
-- node 的模块解析策略本身是不断变化的。例如说早期的 node 并不支持 `package.json` 的 exports 字段
+- 在哪个工具中查找模块也不重要。 `tsc`, `nodejs`, `vite`, `esbuild`, `webpack`, `rspack` 都需要处理 import/require，都需要解析模块，都需要选择一个查找模块的策略，而绝大多数都是使用 node 策略
+- node 的模块解析策略本身是不断变化的。例如说早期的 node 并不支持 `package.json` 的 `exports` 字段
 
-### 追踪模块解析
+### 调试模块解析
 
 #### nodejs
 
@@ -129,6 +127,8 @@ NODE_MODULES_PATHS(START)
 - [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve)
 - [enhanced-resolve](https://www.npmjs.com/package/enhanced-resolve)
 - [resolve](https://www.npmjs.com/package/resolve)
+
+我写这篇博客时用来做各种测试的项目：[module-resolution](https://github.com/tjx666/module-resolution/tree/main)
 
 #### typescript
 
@@ -140,7 +140,7 @@ import { pow } from 'math/pow';
 console.log(pow(1, 2));
 ```
 
-```shell
+```bash
 ❯ tsc --traceResolution
 ======== Resolving module 'math/pow' from '/Users/yutengjing/code/module-resolution/apps/commonjs-ts-app/src/index.ts'. ========
 Explicitly specified module resolution kind: 'NodeNext'.
@@ -219,32 +219,30 @@ const add = require('lodash/src/add');
 类似的字段还有很多，像上面写到的：
 
 - `typings`：和 `types` 是一样的作用，用来给 tsc 说明模块的类型声明入口。它俩相比我更建议用 `typings:`
-
   - 首先 `types` 和另一个字段`type` 很接近，容易拼错。
   - 另外，我们 ts 项目里面的 .d.ts 一般也放 `typings` 文件夹
   - `ts-node` 查找 .d.ts 默认也只找 `typings` 目录。
-
 - `unpkg`： 和 `jsdeliver`, `cdn`, `browser` 字段一样都是给 cdn 厂家用的，细节可以参考这个 issue: [[What about `cdn` entry?](https://github.com/stereobooster/package.json/issues/14#top)](https://github.com/stereobooster/package.json/issues/14)
 
 ### vite 如何选择模块入口
 
 `vite` 使用 `esbuild` 将 ts 文件转成 js 文件，`esbuild` 在转换时会直接丢弃 ts 类型，并不会做类型检查，所以它不用管类型怎样解析，也就不用处理 `typings` 等字段。
 
-当同时存在 `main` 和 `module`入口，各种构建工具尤其是 `rollup`, `vite` 这些基于 ESM 的都是优先使用 `module` 字段。那如果只有 1 个 `main` 字段，使用 vite 会发生啥呢？
+当同时存在 `main` 和 `module`入口，各种构建工具尤其是 `rollup`, `vite` 这些基于 ESM 的都是优先使用 `module` 字段。那如果只有 1 个 `main` 字段，使用 `vite` 会发生啥呢？
 
-首先 vite 打包情况分很多种：
+首先 `vite` 打包情况分很多种：
 
 - pre bundling: 使用 esbuild 预构建
-- esm dev server: vite 内置插件 `vite:resolve` 处理模块 id 解析
-- prod build: 生产环境构建，本质是 rollup + `vite:resolve` 插件 + `@rollup/plugin-commonjs` 插件
+- esm dev server: `vite` 内置插件 `vite:resolve` 处理模块 id 解析
+- prod build: 生产环境构建，本质是 `rollup` + `vite:resolve` 插件 + `@rollup/plugin-commonjs` 插件
 
-默认情况下，vite 预构建不管你第三方依赖支不支持 esm，都会给你打包。你可能会认为如果一个模块声明了 `"type": "module"`，`vite` 就不会给你预构建，但实际上 vite 会的，应该是考虑类似 `lodash-es` 这样模块数量特多的依赖不预构建的话 http 请求数就太多了。
+默认情况下，`vite` 预构建不管你第三方依赖支不支持 esm，都会给你打包。你可能会认为如果一个模块声明了 `"type": "module"`，`vite` 就不会给你预构建，但实际上 `vite` 会的，应该是考虑类似 `lodash-es` 这样模块数量特多的依赖不预构建的话 http 请求数就太多了。
 
-如果你不想预构建，就得手动将依赖添加到预构建 exclude 列表。当把一个依赖添加到预构建 exclude 列表，vite 就不会对它进行 commonjs -> esm 转换，即便把 main 字段指向 commonjs 模块块，vite 还是会傻傻的把那个模块当 esm 模块处理。
+如果你不想预构建，就得手动将依赖添加到预构建 exclude 列表。当把一个依赖添加到预构建 exclude 列表，`vite` 就不会对它进行 `commonjs` -> `esm` 转换，即便把 `main` 字段指向一个 `commonjs` 模块，`vite` 还是会傻傻的把那个模块当 esm 模块处理。
 
-vite 和 rollup 都是通过插件系统来增加自身的能力，它们都是先通过 resolve 插件确定一个模块的最终文件路径，再下一步使用 `@rollup/plugin-commonjs` 插件在需要转换的情况下给你转成 esm。如果同时存在 esm 的入口和通用入口，都会优先使用 esm 入口。
+`vite` 和 `rollup` 都是通过插件系统来增加自身的能力，它们都是先通过 resolve 插件确定一个模块的最终文件路径，再下一步使用 `@rollup/plugin-commonjs` 插件在需要转换的情况下给你转成 esm。如果同时存在 esm 的入口和通用入口，都会优先使用 esm 入口。
 
-一些人可能会认为 `main` 入口是给 commonjs 专用的，其实不是，main 入口也可以给 esm 用，它是一个通用入口。另一个类似的还有 `exports` 中的 default 字段。
+一些人可能会认为 `main` 入口是给 `commonjs` 专用的，其实不是，`main` 入口也可以给 `esm` 用，它是一个通用入口。另一个类似的还有 `exports` 中的 `default` 字段。
 
 ```json
 {
@@ -272,7 +270,7 @@ vite 和 rollup 都是通过插件系统来增加自身的能力，它们都是�
 
 使用 pnpm 安装依赖的时候有时候会看到这个警告：
 
-```shell
+```bash
  WARN  deprecated @types/markdownlint@0.18.0: This is a stub types definition. markdownlint provides its own type definitions, so you do not need this installed.
 ```
 
@@ -373,6 +371,7 @@ lodash
 - 外层的 `*` 表示 typescript 的版本范围是任意版本
 - 内层的 `*` 表示任意子路径，例如 `unplugin-auto-import/vite` 就对应 `vite`
 - 整体表示在任意版本的 typescript 下，查找 `unplugin-auto-import` 的类型时，将查找路径重定向到 dist 目录。更详细的解释可以看官方文档：[Version selection with`typesVersions`](https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html#version-selection-with-typesversions)。
+- 注意我们这里 `./dist/*` 没有写扩展名，如果 `tsconfig.json` 设置的 `moduleResolution` 是 node16/nodenext，那就要改成 `./dist/*.d.ts`
 
 其实 `typesVersions` 设计目的并不是用来处理子路径导出的，这一点从它的名字就可以看出来，它是用来解决同一个包在不同版本的 typescript 下使用不同的类型声明，例如我们看 `@types/node`：
 
@@ -388,7 +387,7 @@ lodash
 }
 ```
 
-也就是说当你使用的 `typescript` 版本低于等于 4.8，`tsc` 就会使用 `@types/node/ts4.8` 文件夹内的类型说明，否则就用 `@types/node` 包根目录的类型声明：
+也就是说当你使用的 `typescript` 版本不大于 4.8，`tsc` 就会使用 `@types/node/ts4.8` 文件夹内的类型说明，否则就用 `@types/node` 包根目录的类型声明：
 
 ```txt
 // node_modules/@types/node
@@ -412,12 +411,11 @@ import fs from 'node:fs/promises';
 ```
 
 - 当 ts 版本为 4.7，会找到 `@types/node/ts4.8/fs/promises`
-
 - 当 ts 版本为 5.0，会找到 `@types/node/fs/promises`
 
 ## exports
 
-如果说 ESM 是模块化标准的最终解决方案，那么 `package.json` 的 `exports` 便是模块解析策略的最终解决方案。nodejs 官方文档[Modules: Packages](https://nodejs.org/dist/latest-v18.x/docs/api/packages.html) 章节其实大部分内容主要就是在讲 `exports`。
+如果说 ESM 是模块化标准的最终解决方案，那么 `package.json` 的 `exports` 便是模块解析策略的最终解决方案。nodejs 官方文档[Modules: Packages](https://nodejs.org/dist/latest-v18.x/docs/api/packages.html) 章节其实大部分内容主要就是在讲 `exports`。换句话说就是花了一整个章节专门讲 `exports`。
 
 ### 主入口导出
 
@@ -452,6 +450,7 @@ import fs from 'node:fs/promises';
 
 ```json
 {
+  "name": "es-module-package",
   "exports": {
     "./submodule.js": "./src/submodule.js"
   }
@@ -513,7 +512,7 @@ import submodule from 'es-module-package/private-module.js';
 
 #### 禁止模块导出
 
-你可以用通过将一个模块的 target pattern 设置为 null 来禁止某个子路径被另一个模块导入：
+你可以用通过将一个模块的 target pattern 设置为 `null` 来禁止某个子路径被另一个模块导入：
 
 ```json
 {
@@ -531,7 +530,7 @@ import 'xxx/forbidden';
 
 #### 扩展名和文件夹模块问题
 
-需要注意的是 node 在上述步骤中是不会做自动添加扩展名的操作，例如你写成下面这样是有问题的：
+需要注意的是 nodejs 在通过 exports 解析模块时是不会做自动添加扩展名的操作，例如你写成下面这样是有问题的：
 
 ```json
 {
@@ -542,9 +541,9 @@ import 'xxx/forbidden';
 }
 ```
 
-使用上面的配置， `lodash/add` 会被解析到 `node_modules/lodash/add`，如果是在 nodejs esm 环境下，由于模块必须带扩展名，它显然是有问题的。
+使用上面的配置， `lodash/add` 会被解析到 `xxx/node_modules/lodash/add`，如果是在 nodejs esm 环境下，由于模块必须带扩展名，它显然是有问题的。
 
-有些人可能认为在 cjs 下它就能正常工作了，事实上也是不能工作的。exports 配置的映射规则已经到底了，不会处理扩展名，而且也不会处理文件夹模块，它是直接把 `node_modules/lodash/add` 当成没有扩展名的 js 文件模块处理的。换句话说，exports 的 target 中 \* 被替换后，得到的已经是最终的文件路径。
+有些人可能认为在 cjs 下它就能正常工作了，因为 nodejs 在 cjs 情况下不需要写扩展名。但事实上也是不能工作的，exports 配置的映射规则已经到底了，也就是说不会处理扩展名，nodejs 会把 `xxx/node_modules/lodash/add` 当做一个绝对路径，而这个文件在文件系统并不存在。
 
 也就是说下面这样的目录结构是不会正常工作的：
 
@@ -572,14 +571,15 @@ import 'xxx/forbidden';
 {
   "name": "ui",
   "exports": {
-    "./*": "./dist/xxx/index.js"
+    // 写成 ./dist/* 是不行的，./dist/xxx 并不是一个 js 文件
+    "./*": "./dist/*/index.js"
   }
 }
 ```
 
 #### 优先级
 
-如果 exports 映射左侧的多个 pattern 都能匹配当前导入模块，最终会选择哪个呢?
+如果 `exports` 映射左侧的多个 pattern 都能匹配当前导入模块，最终会选择哪个呢?
 
 当 package.json 为：
 
@@ -596,6 +596,8 @@ import 'xxx/forbidden';
 ```
 
 例如模块 id 是：`xxx/a/b`，其实最终会使用最具体的 `./a/b`。
+
+> 短路匹配：从前到后匹配，当一个 key pattern 匹配成功，不管 target pattern 对应的文件能否找到都结束匹配
 
 `./*`, `./a/*`, `./a/b` 都能匹配这个模块 id，显然短路匹配时是不合理的，因为如果采用短路匹配，那么就是采用 `./*` 这个规则了，我们就没办法去设置一个更具体的规则，也就是说 `./a/b` 这个规则就没用了。
 
@@ -616,13 +618,14 @@ package.json:
 
 当模块 id 是 `xxx/a/b/c`，nodejs 会采用 `"./a/b/*"`。尴尬的是：目前主流的几个 node 模块解析库都不能正确解析这个例子，只有 webpack 用的 [enhanced-resolve](https://github.com/webpack/enhanced-resolve) 是可以解析的，下面三全跪：
 
-- vite 内置插件 `vite:resolve` 使用的 [resolve.exports](https://github.com/lukeed/resolve.exports/issues/29) 这个第三方库
-- rollup 官方插件 [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/issues/1476)
-- rspack 使用的 [nodejs-resolver](https://github.com/web-infra-dev/nodejs_resolver/issues/177)
+- `vite` 内置插件 `vite:resolve` 使用的 `resolve.exports`：[resolve priority incorrectly](https://github.com/lukeed/resolve.exports/issues/29)
+- `rollup` 官方插件 `@rollup/plugin-node-resolve`：[[node-resolve] \* in exports key can't correctly resolved](https://github.com/rollup/plugins/issues/1476)
+- `rspack` 使用的 `nodejs-resolver`: [can't deal with priority correctly](https://github.com/web-infra-dev/nodejs_resolver/issues/177)
 
 虽然 `enhanced-resolve` 可以处理上面给出的用例，但是它却处理不了下面这个例子：
 
 ```json
+// issue: https://github.com/webpack/enhanced-resolve/issues/376
 {
   "name": "xxx",
   "exports": {
@@ -631,7 +634,11 @@ package.json:
 }
 ```
 
-对于这个例子 `enhanced-resolve` 的结果是 undefined, 但是 node 是可以正确解析到 `./dist/hello.js` 这个 target。可见 nodejs 的模块解析策略之复杂远超常人想象，以至于主流的解析库在处理一些特殊情况都或多或少有些 bug，尤其是在处理优先级的时候。
+```javascript
+import 'xxx/a/b/c';
+```
+
+对于这个例子 `enhanced-resolve` 的结果是 `undefined`, 但是 nodejs 是可以正确解析到 `./dist/hello.js` 这个 target。可见 nodejs 的模块解析策略之复杂远超常人想象，以至于主流的解析库在处理一些特殊情况都或多或少有些 bug，尤其是在处理优先级的时候。
 
 那么所谓的**更具体**到底是怎样的算法呢？参考 [enhanced-resolve 的源码](https://github.com/webpack/enhanced-resolve/blob/main/lib/util/entrypoints.js#L565) ，我们可以这样做：
 
@@ -641,7 +648,7 @@ package.json:
 4. 最终遍历到叶子节点的这条路径表示的 pattern 就是最特殊的 pattern，也就是 `./a/b/*`
 
 ```txt
-      root(.)
+        .
     a      *
   b   *
 *       c
@@ -655,7 +662,7 @@ package.json:
 {
   "exports": {
     ".": {
-      // node-addons 表示条件
+      // node-addons, node, import 这些 key 表示条件
       "node-addons": "./c-plus-native.node",
       "node": "./can-be-esm-or-cjs.js",
       "import": "./index-module.mjs",
@@ -745,7 +752,7 @@ package.json:
 }
 ```
 
-```shell
+```bash
 node --conditions=xxx apps/commonjs-app/index.js
 ```
 
@@ -753,15 +760,16 @@ node --conditions=xxx apps/commonjs-app/index.js
 
 #### 内嵌条件
 
-在 monorepo 越来越流行的今天，一个 app package 引用另一个在 workspace 中的 library package 的场景是非常常见的。如果直接使用 library package 对外发布时的 exports 规则（例如都指向 dist 文件夹的文件），就不方便通过修改 library src 下的源码来利用热更新。
+在 `monorepo` 越来越流行的今天，一个 `app` package 引用另一个在 `workspace` 中的 `library` package 的场景是非常常见的。如果直接使用 `library` package 对外发布时的 `exports` 规则（例如都指向 dist 文件夹的文件），就不方便通过修改 `library` src 下的源码来利用热更新。
 
 ```txt
 monorepo-project
 ├── apps
 │   └── app1
 │       ├── package.json
-│       └── src
-│           └── main.ts
+│       ├── src
+│       │   └── main.ts
+│       └── vite.config.ts
 └── packages
     └── library1
         ├── dist
@@ -771,7 +779,7 @@ monorepo-project
             └── index.ts // 希望修改代码热更新能生效
 ```
 
-为了实现 `vite` 开发环境下 library package 能热更新，我们一般会这样组织 `exports`：
+为了实现 `vite` 开发环境下 `library` package 能热更新，我们一般会这样组织它的 `exports`：
 
 ```json
 {
@@ -788,7 +796,7 @@ monorepo-project
   },
   "publishConfig": {
     // 发布出去时我们不需要保留 development 这个 condition
-    // 如果保留，会导致使用这个库的用户时也走 src
+    // 如果保留，会导致使用这个库的用户也走 src
     "exports": {
       ".": {
         "import": "./dist/es/index.mjs"
@@ -798,9 +806,11 @@ monorepo-project
 }
 ```
 
-在上面的例子中，首先我们使用了`development` 条件，这个条件 [vite](https://vitejs.dev/config/shared-options.html#resolve-conditions) 是默认支持的。然后你会发现我们是在 `import` 条件中使用的 `development` 条件，也就是说 node 解析策略是支持内嵌条件的。
+在上面的例子中，首先我们使用了 `development` 条件，这个条件 `vite` 是[默认支持](https://vitejs.dev/config/shared-options.html#resolve-conditions)的。然后你会发现我们是在 `import` 条件中使用的 `development` 条件，也就是说 `exports` 是支持内嵌条件的。
 
 值得注意的是我们使用了 `publishConfig` 配置来在 `npm publish` 时覆盖我们的 `exports` 配置。
+
+并不是所有的字段都支持在 `publicConfig` 覆盖，例如 [npm](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#publishconfig) 不支持覆盖 `typesVersion`，但是我平时使用的 [pnpm](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#publishconfig) 是支持的。
 
 #### types 条件
 
@@ -869,11 +879,11 @@ monorepo-project
 注意点：
 
 - `types` 条件应该放到其它条件也就是 `require` 和 `import` 前面
-- 这里声明 `main`, `module`,`typesVersions` 是为了兼容性，在理想情况下，一个 `exports` 对象能解决所有问题
+- 这里声明 `main`, `module`,`typesVersions` 是为了兼容性，在理想情况下，一个 `exports` 对象能解决所有问题，它们都可以不写。
 
 #### 细说 typescript 中的 moduleResolution
 
-最新的 typescript v5.1， `tsconfig.json` 的 `moduleResolution` 选项支持 5 个值：
+最新的 `typescript` v5.1， `tsconfig.json` 的 `moduleResolution` 选项支持 5 个值：
 
 - `classic`
 - `node`
@@ -883,16 +893,17 @@ monorepo-project
 
 `classic` 和 `node` 这两个从 ts 诞生支持就存在，但它们不支持 `exports`，后来新增的 `node16`, `nodenext`, `bundler` 都支持。
 
-有意思的是 typescript 第一个支持 `exports` 配置模块类型解析策略是 `node16`，就是我不太理解为啥要叫 `node16`：
+有意思的是 `typescript` 第一个支持 `exports` 配置模块类型解析策略是 `node16`，就是我不太理解为啥要叫 `node16`：
 
-- nodejs 支持 ESM 的最低版本是 v8.5.0
-- nodejs 支持 exports 的最低版本是 v12.11
+- nodejs 支持 `esm` 的最低版本是 v8.5.0
+- nodejs 支持 `exports` 的最低版本是 v12.11
 
 那叫 `node12` 不是刚好？
 
-`node16` 策略主要是增加了 ESM 的限制，例如文件必须带扩展名：
+`node16` 策略主要是增加了 `esm` 的限制，例如文件必须带扩展名：
 
 ```typescript
+// file: src/index,ts
 import add from './add';
 
 add(1, 2);
@@ -904,15 +915,15 @@ add(1, 2);
 Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './add.js'?
 ```
 
-需要注意的是：你要设置 `package.json` 中 `"type": "module"` 来明确开启 ESM，否则即便你配置了 `"module": "ESNext"`，那些 ESM 限制也不会生效。
+需要注意的是：你要设置 `package.json` 中 `"type": "module"` 来明确开启 `esm`，否则即便你配置了 `"module": "ESNext"`，那些 `esm` 限制也不会生效。
 
 #### 优先级
 
-可以看到它同时配置了 `typesVersion` 和 `exports`，那 tsc 以哪个为标准呢？
+可以看到它同时配置了 `typesVersion` 和 `exports`，那 `tsc` 以哪个为标准呢？
 
-首先这和当前配置的 moduleResolution 有关，如果是 moduleResolution: node，那它根本不认识 `exports` 字段，所以使用的是 typesVersions。也因此 `unplugin-auto-import` 为了兼容用户使用 moduleResolution: node 的情况，还是配置了 `typesVersions`。
+首先这和当前配置的 `moduleResolution` 有关，如果是 node，那它根本不认识 `exports` 字段，所以使用的是 `typesVersions`。也因为这个原因，`unplugin-auto-import` 为了兼容用户使用的`moduleResolution` 是 node 的情况，还是配置了 `typesVersions`。
 
-在使用 `node16` 之后新增的模块解析策略时，tsc 会优先取 `exports` 配置的类型解析规则，忽略 `typesVersions`。不过如果你不使用 `exports` 配置 ts 类型，tsc 还是支持`typesVersions` 的。需要注意的是这个时候 `typesVersions` 需要写扩展名：
+在使用 `node16` 之后新增的模块解析策略时，`tsc` 会优先取 `exports` 配置的类型解析规则，忽略 `typesVersions`。不过如果你不使用 `exports` 配置 ts 类型，`tsc` 还是支持`typesVersions` 的。需要注意的是这个时候 `typesVersions` 需要写扩展名：
 
 ```json
 {
@@ -938,16 +949,16 @@ Relative import paths need explicit file extensions in EcmaScript imports when '
 
 `bundler` 是 TypeScript5.0 新增的一个模块解析策略，它是一个对现实妥协的产物，社区倒逼标准。为啥么这么说呢？因为最理想最标准的模块解析策略其实是 node16/nodenext：严格遵循 ESM 标准并且支持 `exports`。
 
-现实情况：拿 vite 来举个例子，vite 宣称是一个基于 ESM 的前端开发工具，但是声明相对路径模块的时候不要求写扩展名。
+现实情况：拿 `vite` 来举个例子，`vite` 宣称是一个基于 `ESM` 的前端开发工具，但是声明相对路径模块的时候却不要求写扩展名。
 
-问题就出在现有的几个模块解析策略都不能完美适配 vite + ts + esm 开发场景：
+问题就出在现有的几个模块解析策略都不能完美适配 `vite` + `ts` + `esm` 开发场景：
 
-- node：不支持 exports
+- node：不支持 `exports`
 - node16/nodenext: 强制要求使用相对路径模块时必须写扩展名
 
-这就导致 node16/nodenext 这俩几乎策略几乎没人用，用的最多的还是 node。
+这就导致 node16/nodenext 这俩策略几乎没人用，用的最多的还是 node。
 
-于是乎，ts5.0 新增了个新的模块解析策略：`bundler`。它出现最大的好处就是：可以让你使用`exports` 声明类型的同时，使用相对路径模块可以不写扩展名。
+于是乎，ts5.0 新增了个新的模块解析策略：`bundler`。它的出现解决的最大痛点就是：可以让你使用 `exports` 声明类型的同时，使用相对路径模块可以不写扩展名。
 
 ## 最佳实践
 
@@ -975,9 +986,9 @@ pkg
 
 ### 理想情况
 
-- 只发布 ESM 模块，设置 package.json `"type": "module"`
+- 只发布 `esm` 模块，`package.json` 设置 `"type": "module"`
 - 使用类似 vite/rollup 可以不写模块扩展名的打包工具
-- typescript 版本 >= 5.0，`tsconfig.json` 设置`"moduleResolution": "bundler"`
+- `typescript` 版本 >= 5.0，`tsconfig.json` 设置`"moduleResolution": "bundler"`
 
 `package.json`:
 
@@ -985,17 +996,15 @@ pkg
 {
   "type": "module",
   "exports": {
+    // 新的第三方库大可不必考虑 cjs
     ".": {
-      // 新的第三方库大可不考虑 cjs，还可以更简化，像下面的子路径模块一样不写 import 条件
-      "import": {
-        "types": "./src/index.ts",
-        // 如果用的是 vite, 也可以直接写 "./src"，其实这也是 vite 和 node 标准不完全一致的地方
-        // vite dev
-        "development": "./src/index.ts",
-        // 用 production 条件也行
-        // vite build
-        "default": "./dist/es/index.mjs"
-      }
+      "types": "./src/index.ts",
+      // 如果用的是 vite, 也可以直接写 "./src"，其实这也是 vite 和 node 标准不完全一致的地方
+      // vite dev
+      "development": "./src/index.ts",
+      // 用 production 条件也行
+      // vite build
+      "default": "./dist/es/index.mjs"
     },
     "./*": {
       "types": "./src/*.ts",
@@ -1006,6 +1015,7 @@ pkg
     }
   },
   "publishConfig": {
+    // 发布出去的包都要写扩展名，因为这个库的使用环境可能要求写扩展名，例如 nodejs
     "exports": {
       ".": {
         "types": "./dist/types/index.d.ts",
@@ -1066,6 +1076,7 @@ pkg
       }
     },
     // 生产环境使用 .d.ts
+    // npm 不支持覆盖，pnpm 支持
     "typesVersions": {
       "*": {
         "*": ["./dist/types/*"]
@@ -1081,5 +1092,5 @@ JS 在设计之初并没有模块这个概念，ESM 也才这两年正式落地�
 
 - `exports` 是一个强大并且被各种前端工具广泛支持的模块解析标准，我们开发 npm 包时，应该使用 `exports`来管理它的解析规则
 - `exports` 的解析规则较为复杂，社区的很多第三方实现或多或少有些 bug，尤其是和优先级相关的
-- 对于很多不想写扩展名的前端项目来说，应该使用 `bundler` 解析策略，这样的话第三方库就可以只写 `exports`，不写 `typesVersions`
-- typescript 的很多设计都是对现实妥协的产物，除了 `bundler` 解析策略，再例如装饰器，早期的装饰器并没有进到 ECMAScript stage3 标准，TS 还是自己实现了一套。换句话说就是 typescript 在开发效率和 ECMAScript 标准之间在当时选择了开发效率。
+- 对于很多不想写扩展名的 typescript 项目来说，应该使用 `bundler` 解析策略，这样的话第三方库就可以只写 `exports`，不写 `typesVersions`
+- `typescript` 的很多设计都是对现实妥协的产物，除了 `bundler` 解析策略，再例如装饰器，早期的装饰器并没有进到 ECMAScript stage3 标准，TS 还是自己实现了一套。换句话说就是 typescript 在开发效率和 ECMAScript 标准之间在当时选择了开发效率。
