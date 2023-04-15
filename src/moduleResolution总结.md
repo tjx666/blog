@@ -9,7 +9,7 @@
 
 而**模块解析策略**（ moduleResolution）更多描述的是一个模块包括相对路径以及非相对路径（也就是第三方库，亦或者说 npm 包）是按照怎样的规则去查找的。相对路径没什么复杂的，不做讨论，本文主要聊聊第三方库的解析。
 
-我们最熟悉的模块解析策略其实是 nodejs 的模块解析策略。第一次了解到还有别的模块解析策略还是在我刚学习 typescript 的时候。模块解析策略可以使用 tsconfig.json 的 moduleResolution 选项来配置，最早只支持两个值：classic 和 node。node 策略在 typescript 中又称之为 node10 的解析策略。
+我们最熟悉的模块解析策略其实是 nodejs 的模块解析策略。第一次了解到还有别的模块解析策略还是在我刚学习 `typescript` 的时候。模块解析策略可以使用 `tsconfig.json` 的 `moduleResolution` 选项来配置，最早只支持两个值：`classic` 和 `node`。`node` 策略在 `typescript` 中又称之为`node10` 的解析策略。
 
 ### moduleResolution: classic
 
@@ -33,28 +33,28 @@ import 'pkg';
 
 ### moduleResolution: node
 
-写过 nodejs 的人应当非常熟悉了这个模块解析策略了，这个模块解析策略其实就是 nodejs 解析模块的策略，其实也就是 node 中的 `require.resolve` 实现。
+写过 nodejs 的人应当非常熟悉了这个模块解析策略了，这个模块解析策略其实就是 nodejs 解析模块的策略，其实也就是 `require.resolve` 实现。
 
 ```java
 console.log(require.resolve('lodash'));
-// => xxx/node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/lodash.js
+// => /xxx/node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/lodash.js
 ```
 
-这也是各种前端构建工具如 `webpack`, `vite` 所采用的模块解析策略。这里没说 `rollup` 是因为`rollup` 默认没有内置模块解析策略，`rollup` 默认所有`npm` 包都是 `external` 的，你需要使用 node 模块解析策略的插件：[@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve)。虽然说 `vite` 用的 nodejs 模块解析策略，但 `vite` 的实现并不完全和 nodejs 一致，其它工具也一样，你可以认为是对 nodejs 模块解析策略的扩展。如果说一个模块在 nodejs 中能正常解析，但它们解析不了，那肯定就是 bug 了。
+这也是各种前端构建工具如 `webpack`, `vite` 所采用的模块解析策略。这里没说 `rollup` 是因为`rollup` 默认没有内置模块解析策略，`rollup` 默认所有`npm` 包都是 `external` 的，你需要使用 node 模块解析策略的插件：[@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve)。虽然说 `vite` 用的 nodejs 模块解析策略，但 `vite` 的实现并不完全和 nodejs 一致，其它工具也一样，你可以认为是对 nodejs 模块解析策略的扩展。不过如果说一个模块在 nodejs 中能正常解析，但它们解析不了，那肯定就算是 bug 了。
 
 很多前端工具的 node 模块解析策略都不太一样：
 
-- vite 用的是第三方库 [resolve.exports](https://github.com/lukeed/resolve.exports)
-- rollup 在 [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve) 自己实现的
-- webpack 用的 [enhanced-resolve](https://www.npmjs.com/package/enhanced-resolve)
-- 不过还是 ljharb 大佬的 [resolve](https://www.npmjs.com/package/resolve) 下载量最高，但有个很大的问题是[不支持 package.json 的 exports](https://github.com/browserify/resolve/issues/222)
+- `vite` 用的是第三方库 [resolve.exports](https://github.com/lukeed/resolve.exports)
+- `rollup` 在 [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve) 自己实现的
+- `webpack` 用的 [enhanced-resolve](https://www.npmjs.com/package/enhanced-resolve)
+- 不过还是 [ljharb](https://github.com/ljharb) 大佬的 [resolve](https://www.npmjs.com/package/resolve) 下载量最高，但有个很大的问题是[不支持 package.json 的 exports](https://github.com/browserify/resolve/issues/222)
 
 其实也有框架想通过优化这个解析速度来优化构建速度的，例如 rspack 用的 rust 模块 [nodejs_resolver](https://github.com/web-infra-dev/nodejs_resolver)，其实也很好理解：
 
 - 查找模块是构建过程的高频操作了，基本上每个文件都需要解析模块 id
 - nodejs 的模块解析规则又比较复杂，并且是偏计算型的
 
-用 rust 重写一遍大概率能得到比较可观的收益，[rspack 作者给出的数据是速度 enhance-resolve 的 15 倍](https://twitter.com/boshen_c/status/1625694791014187009)。
+用 rust 重写一遍大概率能得到比较可观的收益，[rspack 核心作者给出的数据是速度 enhance-resolve 的 15 倍](https://twitter.com/boshen_c/status/1625694791014187009)。
 
 完整的 nodejs 解析策略可以看官方文档：[module#all-together](https://nodejs.org/api/modules.html#all-together)。
 
@@ -68,22 +68,16 @@ require('pkg');
 会按照下面的步骤来查找 `pkg`：
 
 1. 同级目录的 `node_modules` 找同名的 js 文件： `/root/src/node_modules/pkg.js`
-
 2. 同级目录 `node_modules` 里面找包含 `package.json` 的名为 `pkg` 文件夹：`/root/src/node_modules/pkg/package.json`
-
-3. 同级目录 `node_modules` 里面找包含 `index.js` 的 名为 `pkg` 文件夹 `/root/src/node_modules/pkg/index.js`
-
-还是找不到的话，那就往上一级目录重复前面的查找步骤
-
-4. `/root/node_modules/pkg.js`
-
-5. `/root/node_modules/pkg/package.json`
-
-6. `/root/node_modules/pkg/index.js`
+3. 同级目录 `node_modules` 里面找包含 `index.js` 的名为 `pkg` 文件夹 `/root/src/node_modules/pkg/index.js`
+4. 还是找不到的话，那就往上一级目录重复前面的查找步骤
+5. `/root/node_modules/pkg.js`
+6. `/root/node_modules/pkg/package.json`
+7. `/root/node_modules/pkg/index.js`
 
 需要说明的是实际的查找过程还有很多细节我没写出来，例如解析 `package.json` 的 `main` 和 `exports` 字段等，这里只是为了大致描述 node 的解析过程。
 
-其实上面的过程主要对应 nodejs 官方文档中的下面这段，不过要读懂官方文档还是需要一定的背景知识，有经验的读者还是建议仔细阅读一下的。
+其实上面的过程主要对应 nodejs 官方文档中的下面这段，不过要读懂官方文档还是需要一定的背景知识，有经验的读者还是建议完整阅读一下官方文档的。
 
 ```javascript
 LOAD_NODE_MODULES(X, START)
@@ -113,7 +107,7 @@ NODE_MODULES_PATHS(START)
 
 其它需要注意的点：
 
-- 在讨论模块解析策略时，查找的文件类型不重要。css, png，html, wasm 文件都可以视为一个模块。
+- 在讨论模块解析策略时，查找的文件类型不重要。`css`, `png`，`html`, `wasm` 文件都可以视为一个模块。
 - 在哪个工具中查找模块也不重要。 `tsc`, `nodejs`, `vite`, `esbuild`, `webpack`, `rspack` 都需要处理 import/require，都需要解析模块，都需要选择一个查找模块的策略，而绝大多数都是使用 node 策略
 - node 的模块解析策略本身是不断变化的。例如说早期的 node 并不支持 `package.json` 的 `exports` 字段
 
@@ -371,7 +365,7 @@ lodash
 - 外层的 `*` 表示 typescript 的版本范围是任意版本
 - 内层的 `*` 表示任意子路径，例如 `unplugin-auto-import/vite` 就对应 `vite`
 - 整体表示在任意版本的 typescript 下，查找 `unplugin-auto-import` 的类型时，将查找路径重定向到 dist 目录。更详细的解释可以看官方文档：[Version selection with`typesVersions`](https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html#version-selection-with-typesversions)。
-- 注意我们这里 `./dist/*` 没有写扩展名，如果 `tsconfig.json` 设置的 `moduleResolution` 是 node16/nodenext，那就要改成 `./dist/*.d.ts`
+- 注意我们这里 `./dist/*` 没有写扩展名，如果 `tsconfig.json` 设置的 `moduleResolution` 是 `node16` / `nodenext`，那就要改成 `./dist/*.d.ts`
 
 其实 `typesVersions` 设计目的并不是用来处理子路径导出的，这一点从它的名字就可以看出来，它是用来解决同一个包在不同版本的 typescript 下使用不同的类型声明，例如我们看 `@types/node`：
 
@@ -500,7 +494,7 @@ import submodule from 'es-module-package/private-module.js';
 - `exports` 可以写通配符 `*` 的路径例如 `./*` 在英文术语里叫 pattern，也就是模式
 - `exports` 的 value `./lib/*.js` 的英文术语叫 target pattern，也就是目标模式
 
-注意我们这里的 `*` 用的不是 glob 语法，在 glob 语法里面 `*` 表示任意的一层目录，但是在 exports pattern 中可以表示任意层任意路径。
+注意我们这里的 `*` 用的不是 glob 语法，在 glob 语法里面 `*` 表示任意的一层目录，但是在 exports pattern 中可以表示无限层任意路径。
 
 要读懂这个映射规则，我们可以这样理解：
 
@@ -647,12 +641,7 @@ import 'xxx/a/b/c';
 3. 采用层级遍历顺序，优先取当前层非通配符的节点。这个例子中就在第二层把 `./*` pass 掉了，在第三层把 `./a/*/c` pass
 4. 最终遍历到叶子节点的这条路径表示的 pattern 就是最特殊的 pattern，也就是 `./a/b/*`
 
-```txt
-        .
-    a      *
-  b   *
-*       c
-```
+![path tree](https://github.com/tjx666/blog/blob/main/images/module-resolution/path-tree.png?raw=true)
 
 ### 条件导出
 
@@ -881,6 +870,14 @@ monorepo-project
 - `types` 条件应该放到其它条件也就是 `require` 和 `import` 前面
 - 这里声明 `main`, `module`,`typesVersions` 是为了兼容性，在理想情况下，一个 `exports` 对象能解决所有问题，它们都可以不写。
 
+#### 通用类型配置方法
+
+typescript 在所有模块解析策略下查找类型时都支持相邻文件扩展名匹配。也就是说在其它配置不使用的情况下（例如不使用 `exports`，设置 `typings`）：
+
+- 如果你是使用 `node` 策略，对于 `./dist/index.js`，只要存在相邻的 `./index/index.d.ts` 即可。
+
+- 如果你使用的 `node16`/`nodenext` 策略，对于 `./dist/index.mjs` 需要存在 `./dist/index.d.mts`，对于 `./dist/index.cjs`，需要存在 `./dist/index.cts`。
+
 #### 细说 typescript 中的 moduleResolution
 
 最新的 `typescript` v5.1， `tsconfig.json` 的 `moduleResolution` 选项支持 5 个值：
@@ -947,18 +944,96 @@ Relative import paths need explicit file extensions in EcmaScript imports when '
 
 #### bundler
 
-`bundler` 是 TypeScript5.0 新增的一个模块解析策略，它是一个对现实妥协的产物，社区倒逼标准。为啥么这么说呢？因为最理想最标准的模块解析策略其实是 node16/nodenext：严格遵循 ESM 标准并且支持 `exports`。
+`bundler` 是 TypeScript5.0 新增的一个模块解析策略，它是一个对现实妥协的产物，社区倒逼标准。为啥么这么说呢？因为最理想最标准的模块解析策略其实是 `node16` / `nodenext`：严格遵循 ESM 标准并且支持 `exports`。
 
 现实情况：拿 `vite` 来举个例子，`vite` 宣称是一个基于 `ESM` 的前端开发工具，但是声明相对路径模块的时候却不要求写扩展名。
 
 问题就出在现有的几个模块解析策略都不能完美适配 `vite` + `ts` + `esm` 开发场景：
 
 - node：不支持 `exports`
-- node16/nodenext: 强制要求使用相对路径模块时必须写扩展名
+- `node16` / `nodenext`: 强制要求使用相对路径模块时必须写扩展名
 
-这就导致 node16/nodenext 这俩策略几乎没人用，用的最多的还是 node。
+这就导致 `node16` / `nodenext` 这俩策略几乎没人用，用的最多的还是 node。
 
 于是乎，ts5.0 新增了个新的模块解析策略：`bundler`。它的出现解决的最大痛点就是：可以让你使用 `exports` 声明类型的同时，使用相对路径模块可以不写扩展名。
+
+#### nodenext
+
+这个模块策略比 `bundler` 出的早，但是我放到最后说，因为它最复杂也不推荐使用。
+
+目前前端界大部分库都不能正常的在 `moduleResolution: nodenext` 下使用，例如 [@vitejs/plugin-vue2](https://npmview.vercel.app/@vitejs/plugin-vue2)：
+
+```json
+{
+  "name": "@vitejs/plugin-vue2",
+  "version": "2.2.0",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  }
+}
+```
+
+```typescript
+// vite.config.mts
+import vitePluginVue2 from '@vitejs/plugin-vue2';
+
+vitePluginVue2();
+
+// This expression is not callable.
+// Type 'typeof import("/xxx/node_modules/.pnpm/@vitejs+plugin-vue2@2.2.0_vite@4.2.1_vue@2.7.14/node_modules/@vitejs/plugin-vue2/dist/index")' has no call signatures
+```
+
+详细的解释你可以看 ts 团队在 github 上的一个回复：[ts error when moduleResolution is "node16"](https://github.com/vitejs/vite-plugin-react/issues/104#issuecomment-1485806985)
+
+我说下我自己的理解：`nodenext` 模块解析策略严格按照最新的 `nodejs` 模块解析算法判断一个 ts 文件是 `commonjs` 模块还是 esm 模块。也就是瞒住下面两个条件一个 js 模块会被 nodejs 视为 esm 模块：
+
+1. 最近的 `package.json` 设置了 `"type": "module"`
+2. 扩展名是 `.mjs`
+
+上面的例子中，`vite.config.mts` 是一个 esm 模块，因此 `@vitejs/plugin-vue2` 会匹配到 `import` 条件，最终解析到 `/xxx/node_modules/@vitejs/plugin-vue2/dist/index.d.ts`。
+
+但是这个文件会被识别为一个 `commonjs` 的 ts 模块，因为离它最近 `/xxx/@vitejs/plugin-vue2/package.json` 中没有声明 `"type": "module"`，它的扩展名也不是 `.d.mts`，所以它是一个 `commonjs` 的 ts 模块。从实际的报错信息来看，在 `moduleResolution` 是 `node16` / `nodenext` 情况下，**ts 是不支持对一个 commonjs 的 ts 模块使用默认导出**，即便是 `index.d.ts` 中存在 `export default` 也没有用。
+
+实测如果你是使用**命名导出**是没问题的，例如：
+
+```typescript
+import { parseVueRequest } from '@vitejs/plugin-vue2';
+
+parseVueRequest('');
+```
+
+如果你想正确配置，需要改成这样：
+
+```json
+{
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  }
+}
+```
+
+所以为啥没人愿意用 `node16` / `nodenext`：
+
+1. 相对路径需要要扩展名
+2. 写类型要写两套
+
+尽管它是理论上最符合最新的 nodejs 模块解析规则的。
 
 ## 最佳实践
 
@@ -1076,7 +1151,7 @@ pkg
       }
     },
     // 生产环境使用 .d.ts
-    // npm 不支持覆盖，pnpm 支持
+    // npm 不支持覆盖 typesVersions，但是 pnpm 支持
     "typesVersions": {
       "*": {
         "*": ["./dist/types/*"]
@@ -1085,6 +1160,11 @@ pkg
   }
 }
 ```
+
+### exports 规范检测工具
+
+- [publint](https://github.com/bluwy/publint) cli 工具，可以帮你检测出 target pattern 对应的文件是否存在，以及是否出现 `import` 条件却指向一个扩展名是 `.cjs` 的模块
+- [Are the types wrong?](https://arethetypeswrong.github.io/) 在线网站，帮你检测一个 npm package 的 `typescript` 类型配置在各种 `moduleResolution` 是否会出现问题
 
 ## 总结
 
