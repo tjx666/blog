@@ -38,7 +38,7 @@ Safari 又号称 Chrome 下载器，开启代理后，从 <https://www.google.co
 
 ### flags
 
-打开  <chrome://flags>，以下是我开启的 flags：
+打开 <chrome://flags>，以下是我开启的 flags：
 
 - Parallel downloading 强烈推荐，多线程下载加速。
 - Experimental QUIC protocol
@@ -133,6 +133,7 @@ Safari 又号称 Chrome 下载器，开启代理后，从 <https://www.google.co
 - [百度网盘](https://pan.baidu.com/download#pan)
 - [迅雷](https://mac.xunlei.com/) 国内下载磁力速度这块真没能打得过迅雷的吧？不过现在动不动就因为版权问题下载不了也是很久没用了
 - [速享](https://github.com/nightmare-space/speed_share) 应该是最好的局域网跨端传输客户端工具
+- [向日葵](https://sunlogin.oray.com/) 偶尔需要远程同事电脑
 
 ## 安装字体
 
@@ -355,3 +356,41 @@ xcp v0.9.3:
 ```bash
 clash-speedtest  github-compare   go-global-update
 ```
+
+### 系统设置优化
+
+#### 关闭用不到的服务
+
+- Siri
+
+#### 轻点来点按
+
+系统设置 -> 触控板 -> 轻点来点按
+
+#### 三指拖移
+
+系统设置 -> 辅助功能 -> 触控板选项 -> 拖移样式 -> 三指拖移
+
+#### 关闭自动亮度
+
+显示器 -> 自动亮度 -> 关闭
+
+我不用自动调节亮度，平时都是亮度拉满。
+
+#### 按键速率
+
+系统设置 -> 键盘:
+
+- 键重复速率 拉到最右边，最快
+- 重复前的延迟 拉到右边第二个，第二短
+
+#### 指针控制
+
+系统设置 -> 辅助功能 -> 指针控制：
+
+- 连按速度，右边第三个
+- 弹开载入速度，右边第三个
+
+### 隐私与安全性
+
+安全性 -> 运行从以下位置下载的应用程序 -> Apple Store 和被认可的开发者
