@@ -17,6 +17,10 @@
 
 1. [moduleResolution 总结](https://github.com/tjx666/blog/blob/main/src/moduleResolution%E6%80%BB%E7%BB%93.md)
 
+### 2023-05
+
+1. [Mac 装机记录](https://github.com/tjx666/blog/blob/main/src/Mac%20%E8%A3%85%E6%9C%BA%E8%AE%B0%E5%BD%95.md)
+
 你也可以访问我的一些社区主页：
 
 [知乎](https://www.zhihu.com/people/yu-teng-jing/posts)
