@@ -1,4 +1,4 @@
-由于这两年公司裁了不少人，其实一直都是有不少 m1 机器可以换的，但是之前由于软件兼容性的问题一直没有换。今年工作内容换了，最近夏天快到了，温度越来越高，实在是忍不了那滚烫的 touch bar，必须得换了。
+由于这两年公司裁了不少人，所以其实一直都是有不少 m1 机器可以换的，但是之前由于软件兼容性的问题一直没有换。今年工作内容变了，加上最近夏天快到了，温度越来越高，实在是忍不了那滚烫的 touch bar，于是决定换台 m1。
 
 本文的写作目的：
 
@@ -188,7 +188,7 @@ function proxy() {
 - [lsd](https://github.com/lsd-rs/lsd) ls 命令替代品
 - [fd](https://github.com/sharkdp/fd#installation) find 命令替代品
 - [rg](https://github.com/BurntSushi/ripgrep) 最强大的文本搜索根据，VSCode 内置的搜索也是用的它
-- [fzf](https://github.com/junegunn/fzf) 模糊搜索根据
+- [fzf](https://github.com/junegunn/fzf) 模糊搜索工具
 
 通过命令 `brew leaves` 输出所有手动安装的包（排除依赖包）：
 
