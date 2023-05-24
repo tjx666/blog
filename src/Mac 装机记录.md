@@ -346,7 +346,7 @@ yo
 
 有很多，用到的时候再装。
 
-#### [Rust](https://www.rust-lang.org/tools/install)
+#### [rust](https://www.rust-lang.org/tools/install)
 
 直接按照官网提示使用 `rustup` 安装 `rust`。
 
@@ -364,7 +364,7 @@ xcp v0.9.3:
     xcp
 ```
 
-#### [Golang](https://go.dev/dl/)
+#### [golang](https://go.dev/dl/)
 
 直接从官网下载安装器安装最新的 Golang。
 
@@ -373,6 +373,10 @@ xcp v0.9.3:
 ```bash
 clash-speedtest  github-compare   go-global-update
 ```
+
+#### python
+
+使用 [pyenv](https://github.com/pyenv/pyenv) 管理 python 版本。
 
 ## 系统设置优化
 
