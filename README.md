@@ -21,9 +21,13 @@
 
 1. [Mac 装机记录](https://github.com/tjx666/blog/blob/main/src/Mac%20%E8%A3%85%E6%9C%BA%E8%AE%B0%E5%BD%95.md)
 
+### 2023-06
+
+1. [面向 lint 编程](https://github.com/tjx666/blog/blob/main/src/%E9%9D%A2%E5%90%91%20lint%20%E7%BC%96%E7%A8%8B.md)
+
 你也可以访问我的一些社区主页：
 
 [知乎](https://www.zhihu.com/people/yu-teng-jing/posts)
 [掘金](https://juejin.cn/user/2664871915684493/posts)
 
-> 努力的人一定会有所收获!
+> 努力的人一定会有所收获！
