@@ -146,6 +146,7 @@
 
 - [Fira Code](https://github.com/tonsky/FiraCode) 代码字体
 - [Meslo Nerd Font](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k) 终端字体, 支持显示各种图标，这个后面配置 powerlevel10k 的时候就会自动安装
+- [霞鹜文楷](https://github.com/lxgw/LxgwWenKai)
 
 ## 开发环境配置
 
