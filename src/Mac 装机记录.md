@@ -120,6 +120,7 @@
 - [Better Display](https://github.com/waydabber/BetterDisplay) 显示器设置工具
 - [Charles](https://www.charlesproxy.com/) 以前调试移动端 app 用到过
 - [IINA](https://github.com/iina/iina) 视频播放器
+- [Just Focus](https://apps.apple.com/cn/app/just-focus/id1142151959?mt=12) 番茄工作法
 - [Key Codes](https://apps.apple.com/cn/app/key-codes/id414568915?mt=12) Debug Key Code 的时候很有用
 - [KeyCastr](https://github.com/keycastr/keycastr) 录屏时显示键盘输入
 - [MacUpdater](https://www.corecode.io/macupdater/) 我不用它去更新，只用来查看哪些 app 可以更新，可能会考虑入正
