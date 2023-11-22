@@ -168,6 +168,24 @@
 
 安装完后切换 `Minimal` 主题。
 
+#### 设置快捷键
+
+1. 打开 settings -> keys，删除默认的 ⌘ + ← 以及 ⌘ + → 快捷键配置
+2. 打开 settings -> profiles，点击 + 号新建一个新的 profile 命名为 `custom`，在 key mappings 中增加
+   - ⌘ + ←，为 Send Hex Codes: 输入 0x01
+   - ⌘ + →，为 Send Hex Codes: 输入 0x05
+   - ⌥ + ←，为 Send Escape Sequence: 输入 b
+   - ⌥ + →，为 Send Escape Sequence: 输入 f
+
+#### 配置 `⇧ + ⏎` 为直接执行 `zsh-autosuggestions` 提示的命令
+
+```bash
+# bindkey
+bindkey '^[[1;3B' autosuggest-execute
+```
+
+新增 Key Mappings `⇧ + ⏎` 为 Send Escape Sequence: 输入 `[1;3B`
+
 ### [HomeBrew](https://brew.sh/)
 
 在 `finder` 中打开 `home` 目录，通过 `cmd + shift + .` 显示隐藏文件。新增 `.zshrc` 文件，加入代理配置（把代理开关封装成一个 zsh 函数），类似：
