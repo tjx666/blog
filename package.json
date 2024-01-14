@@ -7,10 +7,10 @@
     },
     "prettier": "@yutengjing/prettier-config",
     "lint-staged": {
-        "src/*.md": "prettier --write"
+        "src/*.md": "bunx prettier --write"
     },
     "simple-git-hooks": {
-        "pre-commit": "npx lint-staged"
+        "pre-commit": "bunx lint-staged"
     },
     "devDependencies": {
         "@yutengjing/prettier-config": "^1.0.0",
