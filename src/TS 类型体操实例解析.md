@@ -285,10 +285,7 @@ const obj = {
 } as const;
 
 /**
-// obj 被推断成
-{
-    readonly name: "ly";
-}
+ * // obj 被推断成 { readonly name: "ly"; }
  */
 ```
 
@@ -489,8 +486,8 @@ type R2 = UpperCase<'nb'>; // => "NB"
 ```ts
 type UpperCase<S extends string> = S extends `${infer First}${infer Rest}`
   ? `${CapitalFirstLetter<First>}${UpperCase<Rest>}`
-	// 当 S 是空串便会走这个分支，直接返回空串即可
-  : S;
+  : // 当 S 是空串便会走这个分支，直接返回空串即可
+    S;
 ```
 
 ### Union 的分布式运算
@@ -516,17 +513,17 @@ type R1 = AppendDot<'a' | 'b'>; // => "a." | "b."
 
 // 配合 as 来过滤 keys
 type Getter<T> = {
-    [P in keyof T as P extends `get${infer Rest}` ? P : never]: T[P];
+  [P in keyof T as P extends `get${infer Rest}` ? P : never]: T[P];
 };
 
 const obj = {
-    age: 18,
-    getName() {
-        return 'ly';
-    },
-    hello() {
-        console.log('hello');
-    },
+  age: 18,
+  getName() {
+    return 'ly';
+  },
+  hello() {
+    console.log('hello');
+  },
 };
 
 type R = Getter<typeof obj>;
@@ -610,8 +607,8 @@ console.log(permutation(['a', 'b', 'c']));
 type Permutation<U, E = U> = [U] extends [never]
   ? ''
   : E extends U
-  ? `${E & string}${Permutation<Exclude<U, E>>}`
-  : '';
+    ? `${E & string}${Permutation<Exclude<U, E>>}`
+    : '';
 ```
 
 **作业：**
@@ -622,20 +619,20 @@ type Permutation<U, E = U> = [U] extends [never]
 ```ts
 // 自底向上，使用递归来循环
 type Fibonacci<
-    T extends number,
-    // 这个数组用来取 length 表示循环下标
-    TArray extends ReadonlyArray<unknown> = [unknown, unknown, unknown],
-    // 这个数组的 length 就是前一个项的前一项的值
-    PrePre extends ReadonlyArray<unknown> = [unknown],
-    // 表示前一项的值
-    Pre extends ReadonlyArray<unknown> = [unknown],
+  T extends number,
+  // 这个数组用来取 length 表示循环下标
+  TArray extends ReadonlyArray<unknown> = [unknown, unknown, unknown],
+  // 这个数组的 length 就是前一个项的前一项的值
+  PrePre extends ReadonlyArray<unknown> = [unknown],
+  // 表示前一项的值
+  Pre extends ReadonlyArray<unknown> = [unknown],
 > = T extends 1
-    ? 1
-    : T extends 2
+  ? 1
+  : T extends 2
     ? 1
     : TArray['length'] extends T // 表示已经循环了 T 次
-    ? [...Pre, ...PrePre]['length'] // 前两项相加
-    : Fibonacci<T, [...TArray, unknown], Pre, [...Pre, ...PrePre]>; // 使用递归来循环
+      ? [...Pre, ...PrePre]['length'] // 前两项相加
+      : Fibonacci<T, [...TArray, unknown], Pre, [...Pre, ...PrePre]>; // 使用递归来循环
 ```
 
 </details>

@@ -131,10 +131,15 @@ mkdir cep-hello-world
 在项目根目录下创建 `CSXS` 文件夹，并添加 `manifest.xml` 文件，文件内容：
 
 ```xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!-- ExtensionBundleId 是插件 id -->
 <!-- Version 指的是 manifest.xml 的 schema 版本 -->
-<ExtensionManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ExtensionBundleId="org.ytj.helloWorld" ExtensionBundleVersion="1.0" Version="7.0">
+<ExtensionManifest
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  ExtensionBundleId="org.ytj.helloWorld"
+  ExtensionBundleVersion="1.0"
+  Version="7.0"
+>
     <!-- 一个 CEP 插件可以注册多个面板，每一个面板都可以视为一个子插件 -->
     <ExtensionList>
         <!-- 注册一个面板，这个面板可以视为一个子插件，id 为 org.ytj.helloWorld.panel -->
@@ -264,7 +269,7 @@ mkdir cep-hello-world
 在插件根目录下新建文件夹 `web`，这个文件夹用来存在插件使用的前端代码，增加 `index.html`，添加如下内容：
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />

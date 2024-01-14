@@ -66,7 +66,7 @@ private setupHtmlForWebview() {
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-/**@type {import('webpack').Configuration}*/
+/** @type {import('webpack').Configuration} */
 module.exports = {
   mode: 'development',
   entry: [resolve(__dirname, '../web/index.tsx')],
@@ -176,7 +176,7 @@ const devEntries = [
   `webpack-dev-server/client/index.js?${devServerClientQuery}`,
 ];
 
-/**@type {import('webpack').Configuration}*/
+/** @type {import('webpack').Configuration} */
 module.exports = {
   mode: 'development',
   entry: [...devEntries, resolve(__dirname, '../web/index.tsx')],

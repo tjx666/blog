@@ -248,6 +248,7 @@ const AMLayerKind = {
 
 /**
  * 使用 AM 遍历 layer tree
+ *
  * @param {(layerDesc: ActionDescriptor) => boolean} visit 返回 false 停止遍历
  * @param {StringID} property
  */

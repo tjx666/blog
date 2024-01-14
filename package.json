@@ -1,31 +1,22 @@
 {
     "name": "blog",
-    "version": "1.0.0",
-    "description": "## 目录",
-    "main": "index.js",
+    "author": "YuTengjing",
+    "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/tjx666/blog.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/tjx666/blog/issues"
-    },
-    "homepage": "https://github.com/tjx666/blog#readme",
-    "simple-git-hooks": {
-        "pre-commit": "npx lint-staged"
-    },
+    "prettier": "@yutengjing/prettier-config",
     "lint-staged": {
         "src/*.md": "prettier --write"
     },
+    "simple-git-hooks": {
+        "pre-commit": "npx lint-staged"
+    },
     "devDependencies": {
-        "lint-staged": "13.2.1",
-        "prettier": "2.8.7",
-        "simple-git-hooks": "2.8.1"
+        "@yutengjing/prettier-config": "^1.0.0",
+        "@yutengjing/tsconfig-node": "^0.0.4",
+        "lint-staged": "15.2.0",
+        "prettier": "3.2.2",
+        "simple-git-hooks": "2.9.0"
     }
 }
