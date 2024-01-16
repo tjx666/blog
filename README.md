@@ -1,6 +1,29 @@
 # 2022 年以来新写的博客
 
+你也可以访问我的一些社区主页：
+
+[掘金](https://juejin.cn/user/2664871915684493/posts)
+[知乎](https://www.zhihu.com/people/yu-teng-jing/posts)
+
+> 努力的人一定会有所收获！
+
 ## 目录
+
+### 2024-01-15
+
+1. [TS类型体操技巧总结](https://github.com/tjx666/blog/blob/main/src/TS类型体操技巧总结.md)
+
+### 2023-06
+
+1. [面向 lint 编程](https://github.com/tjx666/blog/blob/main/src/%E9%9D%A2%E5%90%91%20lint%20%E7%BC%96%E7%A8%8B.md)
+
+### 2023-05
+
+1. [Mac 装机记录](https://github.com/tjx666/blog/blob/main/src/Mac%20%E8%A3%85%E6%9C%BA%E8%AE%B0%E5%BD%95.md)
+
+### 2023-04
+
+1. [moduleResolution 总结](https://github.com/tjx666/blog/blob/main/src/moduleResolution%E6%80%BB%E7%BB%93.md)
 
 ### 2022-03
 
@@ -12,22 +35,3 @@
 6. [【CEP 扩展开发二】HelloWorld](https://github.com/tjx666/blog/blob/main/src/%E3%80%90CEP%20%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91%E4%BA%8C%E3%80%91HelloWorld.md)
 7. [【CEP 扩展开发三】Debug](https://github.com/tjx666/blog/blob/main/src/%E3%80%90CEP%20%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91%E4%B8%89%E3%80%91Debug.md)
 8. [PS 插件图层遍历性能优化](https://github.com/tjx666/blog/blob/main/src/PS%E6%8F%92%E4%BB%B6%E5%9B%BE%E5%B1%82%E9%81%8D%E5%8E%86%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.md)
-
-### 2023-04
-
-1. [moduleResolution 总结](https://github.com/tjx666/blog/blob/main/src/moduleResolution%E6%80%BB%E7%BB%93.md)
-
-### 2023-05
-
-1. [Mac 装机记录](https://github.com/tjx666/blog/blob/main/src/Mac%20%E8%A3%85%E6%9C%BA%E8%AE%B0%E5%BD%95.md)
-
-### 2023-06
-
-1. [面向 lint 编程](https://github.com/tjx666/blog/blob/main/src/%E9%9D%A2%E5%90%91%20lint%20%E7%BC%96%E7%A8%8B.md)
-
-你也可以访问我的一些社区主页：
-
-[知乎](https://www.zhihu.com/people/yu-teng-jing/posts)
-[掘金](https://juejin.cn/user/2664871915684493/posts)
-
-> 努力的人一定会有所收获！
