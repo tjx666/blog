@@ -1,8 +1,9 @@
-type Count<Nums extends readonly number[], Num extends number, Result extends readonly unknown[] = []> =
-Nums extends [infer First, ...infer Rest ]
-? First extends Num 
-    ? Count<Rest, Num, [...Result, unknown]>
-    : Count<Rest, Num, Result>
-: Result['length']
+type Join<Strs extends readonly string[], Result extends string = ''> = Strs extends [
+    infer First extends string,
+    ...infer Rest extends readonly string[],
+]
+    ? Join<Rest, `${Result}${First}`>
+    : Result;
 
-type X = Count<[1, 2, 2, 3], 2>  // => 
+type X = Join<['a', 'b', 'c']>; // => 'abc'
+//   ^?
