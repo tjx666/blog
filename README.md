@@ -13,6 +13,7 @@
 
 1. [TS类型体操技巧总结](https://github.com/tjx666/blog/blob/main/src/TS类型体操技巧总结.md)
 2. [前端如何统一开发环境](https://github.com/tjx666/blog/blob/main/src/前端如何统一开发环境.md)
+3. [最近前端面试的一些代码题](https://github.com/tjx666/blog/blob/main/src/最近前端面试的一些代码题.md)
 
 ### 2023-06
 
